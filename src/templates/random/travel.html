@@ -256,14 +256,19 @@
     .travel-track {
       display: flex;
       width: max-content;
-      padding: 1rem;
       animation: travel-scroll 40s linear infinite;
+    }
+
+    .travel-marquee-group {
+      display: flex;
+      flex: 0 0 auto;
+      gap: 1rem;
+      padding: 1rem 0 1rem 1rem;
     }
 
     .travel-card {
       width: 260px;
       flex: 0 0 auto;
-      margin-right: 1rem;
       border: 1px solid var(--site-border);
       background: var(--site-panel);
       padding: 0.75rem;
@@ -347,14 +352,17 @@
       }
 
       .travel-track {
-        padding: 0.7rem;
         animation-duration: 48s;
+      }
+
+      .travel-marquee-group {
+        gap: 0.7rem;
+        padding: 0.7rem 0 0.7rem 0.7rem;
       }
 
       .travel-card {
         width: 180px;
         padding: 0.55rem;
-        margin-right: 0.7rem;
       }
 
       .travel-card img {
@@ -425,6 +433,7 @@
 
         <div class="travel-marquee">
           <div class="travel-track">
+            <div class="travel-marquee-group">
             <div class="travel-card">
               <img src="/assets/travel/bern switzerland.jpg" alt="Bern Switzerland" />
               <p>Bern, Switzerland</p>
@@ -505,7 +514,8 @@
               <img src="/assets/travel/bryce canyon national park.jpg" alt="Bryce Canyon National Park" />
               <p>Bryce Canyon National Park, Utah, USA</p>
             </div>
-            <!--  -->
+            </div>
+            <div class="travel-marquee-group" aria-hidden="true">
             <div class="travel-card">
               <img src="/assets/travel/bern switzerland.jpg" alt="Bern Switzerland" />
               <p>Bern, Switzerland</p>
@@ -585,6 +595,7 @@
             <div class="travel-card">
               <img src="/assets/travel/bryce canyon national park.jpg" alt="Bryce Canyon National Park" />
               <p>Bryce Canyon National Park, Utah, USA</p>
+            </div>
             </div>
           </div>
         </div>

@@ -344,7 +344,7 @@
 <div class="flex flex-col gap-4">
   <!-- <WhoAmI /> -->
   {% call fieldset("whoami") %}
-  <article class="text-lg prose-p:m-0 flex flex-col-reverse sm:block">
+  <article class="font-serif !text-xl prose-p:m-0 flex flex-col-reverse sm:block">
     <div
       class="profile-photo-wrap mt-4 mx-auto w-56 max-w-full sm:float-right sm:mt-0 sm:ml-4 sm:mb-4 sm:mx-0 sm:w-52 md:w-60 lg:w-64">
       <img src="/assets/me.jpg" alt="Portrait of William Chen" class="photo-main w-full object-cover" loading="eager" />
@@ -354,7 +354,7 @@
     </div>
     <div class="flex flex-col gap-4">
       <p>
-        Hii!! I'm William from Taiwan, and also a master's student at the College of Semiconductor Research, NTHU, currently in a VLSI/CAD lab.
+        Hi there! I'm William from Taiwan, and also a master's student at the College of Semiconductor Research, NTHU, currently in a VLSI/CAD lab.
       </p>
       <p>
         Outside of school, I spend my time playing video games, skiing when I get the chance, and planning trips that somehow always become more complicated than expected.
@@ -372,7 +372,7 @@
   {% call fieldset("cat ~/random.md") %}
   <div class="flex flex-col gap-3 text-lg">
     <div class="flex flex-col gap-1">
-      <p class="m-0">a collection of things that make me, me. featuring the formal cv, travel snaps, current hyperfixations, a wall of wins, and some personal lore.</p>
+      <p class="font-serif text-xl m-0">A collection of things that make me, me. Featuring the formal CV, travel snaps, current hyperfixations, a wall of wins, and some personal lore.</p>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 pt-1">
       {% call button("/random/cv", "w-full h-9 text-base font-bold me-0 !justify-start") %}
@@ -395,7 +395,7 @@
   {% endcall %}
   {% call fieldset("cat ~/education.md") %}
   <div id="education-section" class="text-lg">
-    <p class="m-0">where i learned the things i know</p>
+    <p class="font-serif text-xl m-0">Where I learned the things I know</p>
     <div class="flex flex-col gap-4 mt-4">
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <div class="flex items-start gap-3">
@@ -453,7 +453,7 @@
   {% endcall %}
   {% call fieldset("cat ~/experience.md") %}
   <div id="experience-section" class="text-lg">
-    <p class="m-0">the more professional-looking part of this</p>
+    <p class="font-serif text-xl m-0">The more professional-looking part of this</p>
     <div class="flex flex-col gap-4 mt-4">
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <span class="favorite-star" aria-hidden="true"></span>
@@ -488,7 +488,7 @@
               <p class="text-sm m-0">06/2024 - 11/2024</p>
             </div>
             <p class="text-xs opacity-60 mt-1 m-0">Keelung, Taiwan</p>
-            <p class="text-sm mt-1 m-0">
+            <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
               Spent months building a chip-level global router and snagged an honorable mention. Wrapped up the whole experience at the EDA workshop.
             </p>
             <div class="flex flex-wrap gap-2 mt-3">
@@ -514,7 +514,7 @@
               <p class="text-sm m-0">07/2024 - 08/2024</p>
             </div>
             <p class="text-xs opacity-60 mt-1 m-0">Taipei, Taiwan</p>
-            <p class="text-sm mt-1 m-0">
+            <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
               Guided students in building and programming LEGO EV3 robots, and facilitated STEM learning activities.
             </p>
             <div class="flex flex-wrap gap-2 mt-3">
@@ -542,7 +542,7 @@
               <p class="text-sm m-0">07/2023 - 08/2023</p>
             </div>
             <p class="text-xs opacity-60 mt-1 m-0">Taipei, Taiwan</p>
-            <p class="text-sm mt-1 m-0">Handling paperwork and learning how a massive municipal hospital system operates from the inside.</p>
+            <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">Handling paperwork and learning how a massive municipal hospital system operates from the inside.</p>
           </div>
         </div>
       </div>
@@ -561,7 +561,7 @@
               <p class="text-sm m-0">07/2019</p>
             </div>
             <p class="text-xs opacity-60 mt-1 m-0">Taoyuan, Taiwan</p>
-            <p class="text-sm mt-1 m-0">
+            <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
               Learned to control robots using C language, programming autonomous robotic platforms to execute path navigation, motor control, and sensor feedback logic.
             </p>
             <div class="flex flex-wrap gap-2 mt-3">
@@ -587,7 +587,7 @@
               <p class="text-sm m-0">05/2019 - 09/2019</p>
             </div>
             <p class="text-xs opacity-60 mt-1 m-0">Taipei, Taiwan</p>
-            <p class="text-sm mt-1 m-0">
+            <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
               Took charge of video editing and music scoring for our team's Beauty and the Beast trailer, which successfully won the best commercial award.
             </p>
             <div class="flex flex-wrap gap-2 mt-3">
@@ -603,7 +603,7 @@
   {% endcall %}
   {% call fieldset("ls ~/projects.md") %}
   <div id="projects-section" class="text-lg">
-    <p class="m-0">a few things i want people to actually click on</p>
+    <p class="font-serif text-xl m-0">A few things I want people to actually click on</p>
     <div class="flex flex-col gap-4 mt-4">
       <article class="project-card border border-black/30 dark:border-white/25 p-2">
         <span class="favorite-star" aria-hidden="true"></span>
@@ -613,7 +613,7 @@
           <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
             <div>
               <p class="font-semibold text-base m-0">DataSmith</p>
-              <p class="text-sm mt-1 m-0">
+              <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
                 Agent-powered data cleaning pipeline for turning raw datasets
                 into ML-ready data with quality scoring and dashboards.
               </p>
@@ -634,7 +634,7 @@
           <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
             <div>
               <p class="font-semibold text-base m-0">FluentForm</p>
-              <p class="text-sm mt-1 m-0">
+              <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
                 AI pronunciation coach that analyzes phonemes, scores speech,
                 and generates personalized practice using Azure + OpenAI.
               </p>
@@ -660,7 +660,7 @@
           <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
             <div>
               <p class="font-semibold text-base m-0">MCMC CUDA Model</p>
-              <p class="text-sm mt-1 m-0">
+              <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
                 Monte Carlo + Markov-chain options trading system with
                 backtesting, probabilistic forecasts, and CUDA acceleration.
               </p>
@@ -681,7 +681,7 @@
           <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
             <div>
               <p class="font-semibold text-base m-0">Personal Portfolio Website</p>
-              <p class="text-sm mt-1 m-0">
+              <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
                 My personal website built with a custom static site generator in Python (Jinja2, Mistune) and Tailwind
                 CSS.
               </p>
@@ -699,7 +699,7 @@
   {% endcall %}
   {% call fieldset("cat ~/links.md") %}
   <article>
-    links!
+    <div class="font-serif text-xl">Links!</div>
     <ul>
       <li><a href="mailto:a0935109965@gmail.com">Email</a></li>
       <li><a href="https://github.com/William08290829" target="_blank" rel="noopener noreferrer">GitHub</a></li>
