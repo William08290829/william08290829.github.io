@@ -1,0 +1,1025 @@
+{% extends "layout.html" %}
+{% from "components/fieldset.html" import fieldset %}
+
+{% block head_extra %}
+  <style>
+    .music-shell {
+      overflow: hidden;
+      background: var(--site-panel);
+      border: 1px solid var(--site-border);
+      box-shadow: 6px 6px 0 var(--site-shadow);
+    }
+
+    .music-stage-wrap {
+      position: relative;
+    }
+
+    .music-stage {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      min-height: 320px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0)),
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.05) 0,
+          rgba(255, 255, 255, 0.05) 1px,
+          transparent 1px,
+          transparent 18px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.05) 0,
+          rgba(255, 255, 255, 0.05) 1px,
+          transparent 1px,
+          transparent 18px
+        ),
+        #050505;
+      cursor: pointer;
+    }
+
+    .music-stage.is-paused {
+      cursor: default;
+    }
+
+    .music-pause-overlay {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(0, 0, 0, 0.22);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 140ms ease;
+      z-index: 8;
+    }
+
+    .music-stage.is-paused .music-pause-overlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .music-pause-button {
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.94);
+      color: #111111;
+      box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.18);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.9rem;
+      padding: 0.85rem 1.15rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+    }
+
+    .music-hud {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      z-index: 10;
+      padding: 0.6rem 0.75rem;
+      background: color-mix(in srgb, var(--site-panel) 92%, transparent);
+      border: 1px solid var(--site-border);
+      box-shadow: 4px 4px 0 var(--site-shadow);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.75rem;
+      line-height: 1.45;
+    }
+
+    .music-speed {
+      margin-top: 0.45rem;
+    }
+
+    .music-speed input {
+      width: 100%;
+      accent-color: #111111;
+    }
+
+    .music-hover {
+      position: absolute;
+      left: 1rem;
+      bottom: 1rem;
+      z-index: 10;
+      min-width: 220px;
+      max-width: min(340px, calc(100% - 2rem));
+      padding: 0.7rem 0.8rem;
+      background: color-mix(in srgb, var(--site-panel) 94%, transparent);
+      border: 1px solid var(--site-border);
+      box-shadow: 4px 4px 0 var(--site-shadow);
+      font-family: "IBM Plex Mono", monospace;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .music-hover p {
+      margin: 0;
+    }
+
+    .music-hover-art {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      margin: 0;
+    }
+
+    .music-hover-copy {
+      min-width: 0;
+    }
+
+    .music-hover .music-hover-label {
+      font-size: 0.72rem;
+      opacity: 0.6;
+      margin-bottom: 0.28rem;
+    }
+
+    .music-hover .music-hover-title {
+      font-size: 0.95rem;
+      line-height: 1.25;
+      font-weight: 600;
+    }
+
+    .music-hover .music-hover-artist {
+      margin-top: 0.22rem;
+      font-size: 0.82rem;
+      opacity: 0.75;
+    }
+
+    .music-detail {
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 10;
+      width: min(300px, calc(100% - 2rem));
+      display: none;
+      flex-direction: column;
+      gap: 0.7rem;
+      padding: 0.8rem;
+      background: color-mix(in srgb, var(--site-panel) 95%, transparent);
+      border: 1px solid var(--site-border);
+      box-shadow: 4px 4px 0 var(--site-shadow);
+    }
+
+    .music-detail.is-open {
+      display: flex;
+    }
+
+    .music-detail-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      align-items: start;
+    }
+
+    .music-detail-head p,
+    .music-detail-copy p {
+      margin: 0;
+    }
+
+    .music-detail-label {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--site-muted);
+    }
+
+    .music-detail-title {
+      margin-top: 0.2rem;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .music-detail-close {
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--site-border-strong);
+      background: var(--site-panel);
+      box-shadow: 2px 2px 0 var(--site-shadow);
+      font-size: 0.92rem;
+      line-height: 1;
+    }
+
+    .music-detail-close:hover {
+      background: var(--site-text);
+      color: var(--site-panel);
+    }
+
+    .music-detail-body {
+      display: flex;
+      gap: 0.75rem;
+      align-items: start;
+    }
+
+    .music-detail-cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      margin: 0;
+    }
+
+    .music-detail-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      font-size: 0.84rem;
+      line-height: 1.45;
+      color: var(--site-muted);
+    }
+
+    .music-sprite {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 90px;
+      height: 90px;
+      user-select: none;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 14px 24px rgba(0, 0, 0, 0.32);
+      overflow: hidden;
+      background: #111111;
+      transition: transform 120ms ease, border-color 120ms ease;
+      will-change: transform;
+    }
+
+    .music-sprite:hover {
+      border-color: rgba(255, 255, 255, 0.95);
+      transform: scale(1.06);
+      z-index: 5;
+    }
+
+    .music-sprite img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .music-shelf {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      padding: 1.25rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.14);
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.14), transparent 22%),
+        radial-gradient(circle at top right, rgba(0, 0, 0, 0.08), transparent 18%),
+        color-mix(in srgb, var(--site-panel-soft) 88%, #b8bcc7);
+    }
+
+    .music-lineup-row {
+      display: grid;
+      grid-template-columns: 80px 150px minmax(0, 1fr);
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .music-lineup-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .music-vibe-name {
+      display: inline-block;
+      padding: 0.18rem 0.5rem;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      background: #2bd9b4;
+      color: #111111;
+      text-transform: uppercase;
+    }
+
+    .music-vibe-name.is-chill {
+      background: #ff6d6d;
+      color: #ffffff;
+    }
+
+    .music-vibe-headliners {
+      margin: 0;
+      font-size: 1.28rem;
+      font-weight: 700;
+      line-height: 0.9;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .music-lineup-headliners {
+      display: flex;
+      flex-direction: column;
+      gap: 0.18rem;
+      align-items: flex-start;
+    }
+
+    .music-vibe-row {
+      margin: 0;
+      font-size: 0.88rem;
+      font-weight: 700;
+      line-height: 1.35;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: rgba(0, 0, 0, 0.92);
+    }
+
+    @media (max-width: 900px) {
+      .music-stage {
+        min-height: 240px;
+      }
+
+      .music-hud {
+        top: 0.65rem;
+        left: 0.65rem;
+      }
+
+      .music-hover {
+        left: 0.65rem;
+        bottom: 0.65rem;
+        min-width: 0;
+      }
+
+      .music-detail {
+        right: 0.65rem;
+        bottom: 0.65rem;
+      }
+
+      .music-sprite {
+        width: 72px;
+        height: 72px;
+      }
+
+      .music-shelf {
+        padding: 0.9rem;
+      }
+
+      .music-lineup-row {
+        grid-template-columns: 1fr;
+        gap: 0.55rem;
+      }
+
+      .music-lineup-label {
+        align-items: flex-start;
+      }
+
+      .music-lineup-headliners {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .music-stage {
+        min-height: 260px;
+      }
+
+      .music-hud {
+        top: 0.4rem;
+        left: 0.4rem;
+        padding: 0.35rem 0.45rem;
+        font-size: 0.6rem;
+        line-height: 1.25;
+        max-width: calc(100% - 0.8rem);
+      }
+
+      .music-hud .music-hud-tip {
+        display: none;
+      }
+
+      .music-speed {
+        margin-top: 0.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .music-speed label {
+        white-space: nowrap;
+      }
+
+      .music-speed input {
+        width: 80px;
+      }
+
+      .music-hover {
+        display: none;
+      }
+
+      .music-detail {
+        right: 0.4rem;
+        bottom: 0.4rem;
+        left: 0.4rem;
+        width: auto;
+        padding: 0.55rem 0.6rem;
+        gap: 0.5rem;
+      }
+
+      .music-detail-title {
+        font-size: 0.88rem;
+      }
+
+      .music-detail-label {
+        font-size: 0.62rem;
+      }
+
+      .music-detail-body {
+        gap: 0.55rem;
+      }
+
+
+
+      .music-detail-copy {
+        font-size: 0.74rem;
+        line-height: 1.35;
+      }
+
+      .music-detail-close {
+        width: 1.5rem;
+        height: 1.5rem;
+        font-size: 0.78rem;
+      }
+
+      .music-shelf {
+        padding: 0.8rem;
+      }
+
+      .music-vibe-headliners {
+        font-size: 1.05rem;
+      }
+
+      .music-vibe-row {
+        font-size: 0.78rem;
+        line-height: 1.45;
+      }
+    }
+
+    @media (hover: none), (pointer: coarse) {
+      .music-hover {
+        display: none;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="flex flex-col gap-4">
+    {% call fieldset("cat ~/random/favorite.md") %}
+      <div class="music-shell">
+        <div class="music-stage-wrap">
+          <div class="music-stage" id="music-stage">
+            <div class="music-pause-overlay" id="music-pause-overlay">
+              <button type="button" class="music-pause-button" id="music-pause-button">
+                resume playback
+              </button>
+            </div>
+
+            <div class="music-hud">
+              <div>favorite.exe</div>
+              <div class="music-hud-tip">tap favorites: details</div>
+              <div>corners: <span id="music-corners">0</span></div>
+              <div class="music-speed">
+                <label for="music-speed-slider">
+                  speed: <span id="music-speed-value">0.55x</span>
+                </label>
+                <input
+                  id="music-speed-slider"
+                  type="range"
+                  min="0.2"
+                  max="1.2"
+                  step="0.05"
+                  value="0.55"
+                />
+              </div>
+            </div>
+
+            <div class="music-hover">
+              <div class="relative w-14 h-14 shrink-0 border border-black/20 dark:border-white/20 bg-[#111111] overflow-hidden flex items-center justify-center">
+                <img
+                  class="music-hover-art w-full h-full object-cover"
+                  id="music-hover-art"
+                  src=""
+                  alt="favorite item"
+                />
+                <div id="music-hover-fallback" class="absolute inset-0 hidden flex-col items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-[9px] text-center font-mono leading-tight font-bold p-0.5">
+                  <span></span>
+                </div>
+              </div>
+              <div class="music-hover-copy">
+                <p class="music-hover-label">now hovering</p>
+                <p class="music-hover-title" id="music-hover-title">Item Title</p>
+                <p class="music-hover-artist" id="music-hover-category">Category</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="music-detail" id="music-detail">
+            <div class="music-detail-head">
+              <div>
+                <p class="font-bold text-xs uppercase tracking-wider text-neutral-400" id="music-detail-vibe">Category</p>
+                <p class="music-detail-title" id="music-detail-title">Item Title</p>
+              </div>
+              <button type="button" class="music-detail-close" id="music-detail-close">x</button>
+            </div>
+            <div class="music-detail-body">
+              <div class="relative w-14 h-14 sm:w-24 sm:h-24 shrink-0 border border-black/20 dark:border-white/25 bg-[#111111] overflow-hidden flex items-center justify-center">
+                <img class="music-detail-cover w-full h-full object-cover" id="music-detail-cover" src="" alt="Item cover" />
+                <div id="music-detail-fallback" class="absolute inset-0 hidden flex-col items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-[10px] text-center font-mono leading-tight font-bold p-1">
+                  <span></span>
+                </div>
+              </div>
+              <div class="music-detail-copy">
+                <p id="music-detail-copy">one of the favorites currently bouncing around this page.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="music-shelf" id="music-shelf"></div>
+      </div>
+    {% endcall %}
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    (() => {
+      const favorites = [
+        // GAMES
+        {
+          category: "Games",
+          title: "Brawl Stars",
+          image: "/assets/fav/brawl stars.jpg",
+          note: "brawl stars forever!!!"
+        },
+        {
+          category: "Games",
+          title: "Arena of Valor",
+          image: "/assets/fav/aov.png",
+          note: "a competitive moda game I enjoy playing with friends."
+        },
+        {
+          category: "Games",
+          title: "Valorant",
+          image: "/assets/fav/valorant-logo.jpg",
+          note: "secert teleport!"
+        },
+        {
+          category: "Games",
+          title: "Minecraft",
+          image: "/assets/fav/minecraft.png",
+          note: "who doesn't like minecraft?"
+        },
+        // SPORTS
+        {
+          category: "Sports",
+          title: "Workout",
+          image: "/assets/fav/gym.jpg",
+          note: "Protien!"
+        },
+        // MOVIES
+        {
+          category: "Movie",
+          title: "Detective Conan",
+          image: "/assets/fav/Detective_Conan_logo.png",
+          note: "shin jitsu wa itsumo hitotsu!"
+        },
+        {
+          category: "Movies",
+          title: "How to Train Your Dragon",
+          image: "/assets/fav/httyd.jpg",
+          note: "my favorite american animated movie!"
+        },
+        {
+          category: "Movies",
+          title: "Soul",
+          image: "/assets/fav/soul.jpg",
+          note: "a beautifully written movie that reminds me to slow down and appreciate the little things in life."
+        },
+        {
+          category: "Movies",
+          title: "Coco",
+          image: "/assets/fav/coco.jpg",
+          note: "a stunning exploration of family and memory that leaves me dehydrated from crying every single time TAT"
+        },
+        {
+          category: "Movies",
+          title: "WALL-E",
+          image: "/assets/fav/wall-e.jpg",
+          note: "my very first pixar movie! it introduced me to the unique charm, humor, and imaginative world-building of pixar."
+        },
+        {
+          category: "Movies",
+          title: "Monsters University",
+          image: "/assets/fav/monsters_university.jpg",
+          note: "the ultimate college buddy comedy. oozma kappa will always be my favorite group of underdogs."
+        },
+        {
+          category: "Movies",
+          title: "Up",
+          image: "/assets/fav/up.jpg",
+          note: "flying a house to south america using balloons just to avoid moving to a nursing home. honestly, carl's retirement plan is highly relatable."
+        },
+        {
+          category: "Movies",
+          title: "Zootopia",
+          image: "/assets/fav/zootopia.jpg",
+          note: "i absolutely love the character development and backstories in this movie. i think it's my favorite disney animated movie."
+        },
+        {
+          category: "Movies",
+          title: "Wreck-It Ralph",
+          image: "/assets/fav/wreck-It ralph.jpg",
+          note: "it's a wonderful reminder that you don't need a medal to be a good guy, and that our 'glitches' are what make us unique."
+        },
+        {
+          category: "Movies",
+          title: "Big Hero 6",
+          image: "/assets/fav/big hero 6.jpg",
+          note: "the movie that first inspired my fantasy of becoming an engineer. everything from the robotics to the high-tech maker lab was just too cool."
+        },
+        {
+          category: "Movies",
+          title: "Spider Man",
+          image: "/assets/fav/spider-man.jpg",
+          note: "i think tom holland perfectly captured the energetic, awkward, and pure-hearted neighborhood spider-man."
+        },
+        {
+          category: "Movies",
+          title: "Weathering with You",
+          image: "/assets/fav/weathering_with_you.jpg",
+          note: "i am absolutely obsessed with how the story unfolds and the raw, unyielding love between the two main characters."
+        },
+        {
+          category: "Movies",
+          title: "Inception",
+          image: "/assets/fav/inception.jpg",
+          note: "a brilliant sci-fi heist movie wrapped inside a deeply complex dream world."
+        },
+        // ANIMES
+        {
+          category: "Anime",
+          title: "Frieren: Beyond Journey's End",
+          image: "/assets/fav/frieren.jpg",
+          note: "a beautiful story about time, connection, and memories."
+        },
+        {
+          category: "Anime",
+          title: "Demon Slayer",
+          image: "/assets/fav/demon_slayer.jpg",
+          note: "kaminari no kokyu, ichi no kata: hekireki issen, rokuren!!!"
+        },
+        {
+          category: "Anime",
+          title: "Kaguya-sama: Love Is War",
+          image: "/assets/fav/kaguya-sama.jpg",
+          note: "this is hands down the funniest anime i've ever watched, and rewatching it never fails to cheer me up :)"
+        },
+        {
+          category: "Anime",
+          title: "Spy X Family",
+          image: "/assets/fav/spy-family.jpg",
+          note: "waku waku!"
+        },
+        {
+          category: "Anime",
+          title: "Attack on Titan",
+          image: "/assets/fav/attack-on-titan.jpg",
+          note: "shinzou wo sasageyo!!!"
+        },
+        {
+          category: "Anime",
+          title: "Haikyuu!!",
+          image: "/assets/fav/haikyu.jpg",
+          note: "this show gives me so much hype that i feel like doing volleyball spikes in my living room."
+        },
+        {
+          category: "Anime",
+          title: "Konosuba",
+          image: "/assets/fav/konosuba.jpg",
+          note: "EXPLOSION!!!!!"
+        },
+        {
+          category: "Anime",
+          title: "Naruto",
+          image: "/assets/fav/naruto.jpg",
+          note: "700+ episodes of two boys chasing each other, lol. still can't do the hand signs to save my life."
+        },
+        {
+          category: "Anime",
+          title: "Bocchi the Rock!",
+          image: "/assets/fav/bocchi_the_rock.jpg",
+          note: "i am deeply in love with the incredible soundtrack and the way every single joke lands perfectly!"
+        },
+        // CARTOONS
+        {
+          category: "Cartoon",
+          title: "Star vs. the Forces of Evil",
+          image: "/assets/fav/svtfoe.jpg",
+          note: "came for the chaotic magic, stayed for Star and Marco being the absolute best duo ever."
+        },
+        {
+          category: "Cartoon",
+          title: "Gravity Falls",
+          image: "/assets/fav/gravity-falls.jpg",
+          note: "deep lore. countless hidden secrets to decode. epic supernatural mysteries. this cartoon is built different!"
+        }
+      ];
+
+      const stage = document.getElementById("music-stage");
+      const shelf = document.getElementById("music-shelf");
+      const hoverArt = document.getElementById("music-hover-art");
+      const hoverFallback = document.getElementById("music-hover-fallback");
+      const hoverTitle = document.getElementById("music-hover-title");
+      const hoverArtist = document.getElementById("music-hover-category");
+      const detail = document.getElementById("music-detail");
+      const detailVibe = document.getElementById("music-detail-vibe");
+      const detailTitle = document.getElementById("music-detail-title");
+      const detailCover = document.getElementById("music-detail-cover");
+      const detailCoverFallback = document.getElementById("music-detail-fallback");
+      const detailCopy = document.getElementById("music-detail-copy");
+      const detailClose = document.getElementById("music-detail-close");
+      const cornerCounter = document.getElementById("music-corners");
+      const pauseOverlay = document.getElementById("music-pause-overlay");
+      const pauseButton = document.getElementById("music-pause-button");
+      const speedSlider = document.getElementById("music-speed-slider");
+      const speedValue = document.getElementById("music-speed-value");
+      const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+      const vibes = [
+        {
+          name: "USUALLY",
+          accent: " is-chill",
+          headliners: ["AOV", "Brawl Stars"],
+          items: ["workout"]
+        },
+        {
+          name: "OFTEN",
+          accent: "",
+          headliners: ["Basketball", "Switzerland"],
+          items: ["Hsinchu", "Coffee"]
+        },
+        {
+          name: "SOMETIMES",
+          accent: "",
+          headliners: ["Ramen", "Bubble Tea"],
+          items: ["Frieren: Beyond Journey's End", "Switzerland"]
+        }
+      ];
+      const sprites = [];
+      const vibeLookup = new Map();
+      let animationFrame = null;
+      let lastTime = null;
+      let paused = false;
+      let cornerHits = 0;
+      let sharedSpeed = Number(speedSlider.value) * 120;
+
+      function setPaused(nextPaused) {
+        paused = nextPaused;
+        stage.classList.toggle("is-paused", paused);
+      }
+
+      function buildVibeLookup() {
+        vibes.forEach((vibe) => {
+          [...vibe.headliners, ...vibe.items].forEach((itemTitle) => {
+            if (!vibeLookup.has(itemTitle)) {
+              vibeLookup.set(itemTitle, vibe.name.toLowerCase());
+            }
+          });
+        });
+      }
+
+      function makeShelf() {
+        shelf.innerHTML = vibes
+          .map(
+            (vibe) => `
+              <section class="music-lineup-row">
+                <div class="music-lineup-label">
+                  <p class="music-vibe-name${vibe.accent}">${vibe.name}</p>
+                </div>
+                <div class="music-lineup-headliners">
+                  ${vibe.headliners
+                    .map(
+                      (title) => `
+                        <p class="music-vibe-headliners">${title}</p>
+                      `
+                    )
+                    .join("")}
+                </div>
+                <div>
+                  <p class="music-vibe-row">${vibe.items.join(" &bull; ")}</p>
+                </div>
+              </section>
+            `
+          )
+          .join("");
+      }
+
+      function updateHover(item) {
+        hoverArt.style.display = 'block';
+        hoverFallback.style.display = 'none';
+        hoverArt.src = item.image;
+        hoverArt.alt = `${item.title} cover`;
+        hoverArt.onerror = () => {
+          hoverArt.style.display = 'none';
+          hoverFallback.style.display = 'flex';
+          hoverFallback.querySelector('span').textContent = item.title;
+        };
+        hoverTitle.textContent = item.title;
+        hoverArtist.textContent = item.category;
+      }
+
+      function openAlbumDetail(item) {
+        detailVibe.textContent = item.category || "-";
+        detailTitle.textContent = item.title;
+        detailCover.style.display = 'block';
+        detailCoverFallback.style.display = 'none';
+        detailCover.src = item.image;
+        detailCover.alt = `${item.title} cover`;
+        detailCover.onerror = () => {
+          detailCover.style.display = 'none';
+          detailCoverFallback.style.display = 'flex';
+          detailCoverFallback.querySelector('span').textContent = item.title;
+        };
+        detailCopy.textContent = item.note;
+        detail.classList.add("is-open");
+      }
+
+      function closeAlbumDetail() {
+        detail.classList.remove("is-open");
+      }
+
+      function clampSprite(sprite, width, height) {
+        sprite.x = Math.max(0, Math.min(sprite.x, width - sprite.size));
+        sprite.y = Math.max(0, Math.min(sprite.y, height - sprite.size));
+      }
+
+      function createSprites() {
+        stage.querySelectorAll(".music-sprite").forEach((node) => node.remove());
+        sprites.length = 0;
+
+        const width = stage.clientWidth;
+        const height = stage.clientHeight;
+        const phone = width < 640;
+        const compact = width < 900;
+        const size = phone ? 44 : compact ? 64 : 78;
+        const gap = phone ? 6 : compact ? 12 : 16;
+        const margin = phone ? 6 : 16;
+        const usableWidth = Math.max(width - margin * 2, size);
+        const usableHeight = Math.max(height - margin * 2, size);
+        const columns = Math.max(2, Math.floor((usableWidth + gap) / (size + gap)));
+
+        favorites.forEach((item, index) => {
+          const node = document.createElement("button");
+          node.type = "button";
+          node.className = "music-sprite relative";
+          node.setAttribute("aria-label", `${item.category} - ${item.title}`);
+          node.innerHTML = `
+            <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <div class="absolute inset-0 hidden flex-col items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-1 text-center font-mono leading-tight font-bold">
+              <span class="text-[10px] w-full truncate">${item.title}</span>
+              <span class="text-[8px] opacity-75 mt-0.5">${item.category}</span>
+            </div>
+          `;
+
+          const col = index % columns;
+          const row = Math.floor(index / columns);
+          const rowOffset = row % 2 === 0 ? 0 : Math.floor(size * 0.38);
+          let x = margin + col * (size + gap) + rowOffset;
+          let y = margin + row * (size + gap);
+          x = Math.max(0, Math.min(x, width - size));
+          y = Math.max(0, Math.min(y, height - size));
+          const angle = (index / favorites.length) * Math.PI * 2 + Math.PI / 6;
+          const dx = Math.cos(angle) || 1;
+          const dy = Math.sin(angle) || 1;
+          const sprite = { item, node, x, y, dx, dy, size };
+
+          node.style.width = `${size}px`;
+          node.style.height = `${size}px`;
+          node.style.transform = `translate(${x}px, ${y}px)`;
+
+          if (canHover) {
+            node.addEventListener("mouseenter", (event) => {
+              event.stopPropagation();
+              updateHover(item);
+            });
+          }
+
+          node.addEventListener("focus", () => updateHover(item));
+
+          node.addEventListener("click", (event) => {
+            event.stopPropagation();
+            updateHover(item);
+            openAlbumDetail(item);
+          });
+
+          stage.appendChild(node);
+          sprites.push(sprite);
+        });
+
+        sprites.forEach((sprite) => clampSprite(sprite, width, height));
+      }
+
+      function step(timestamp) {
+        if (lastTime == null) {
+          lastTime = timestamp;
+        }
+
+        const dt = Math.min((timestamp - lastTime) / 1000, 0.033);
+        lastTime = timestamp;
+
+        if (!paused) {
+          const width = stage.clientWidth;
+          const height = stage.clientHeight;
+
+          sprites.forEach((sprite) => {
+            sprite.x += sprite.dx * sharedSpeed * dt;
+            sprite.y += sprite.dy * sharedSpeed * dt;
+
+            let hitX = false;
+            let hitY = false;
+
+            if (sprite.x <= 0 || sprite.x + sprite.size >= width) {
+              sprite.dx *= -1;
+              sprite.x = Math.max(0, Math.min(sprite.x, width - sprite.size));
+              hitX = true;
+            }
+
+            if (sprite.y <= 0 || sprite.y + sprite.size >= height) {
+              sprite.dy *= -1;
+              sprite.y = Math.max(0, Math.min(sprite.y, height - sprite.size));
+              hitY = true;
+            }
+
+            if (hitX && hitY) {
+              cornerHits += 1;
+              cornerCounter.textContent = String(cornerHits);
+            }
+
+            sprite.node.style.transform = `translate(${sprite.x}px, ${sprite.y}px)`;
+          });
+        }
+
+        animationFrame = requestAnimationFrame(step);
+      }
+
+      function handleResize() {
+        const width = stage.clientWidth;
+        const height = stage.clientHeight;
+        const size = width < 640 ? 44 : width < 900 ? 64 : 78;
+
+        sprites.forEach((sprite) => {
+          sprite.size = size;
+          sprite.node.style.width = `${sprite.size}px`;
+          sprite.node.style.height = `${sprite.size}px`;
+          clampSprite(sprite, width, height);
+          sprite.node.style.transform = `translate(${sprite.x}px, ${sprite.y}px)`;
+        });
+      }
+
+      stage.addEventListener("click", () => {
+        setPaused(!paused);
+      });
+
+      pauseOverlay.addEventListener("click", (event) => {
+        event.stopPropagation();
+      });
+
+      pauseButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        setPaused(false);
+      });
+
+      detail.addEventListener("click", (event) => {
+        event.stopPropagation();
+      });
+
+      detailClose.addEventListener("click", (event) => {
+        event.stopPropagation();
+        closeAlbumDetail();
+      });
+
+      speedSlider.addEventListener("input", () => {
+        sharedSpeed = Number(speedSlider.value) * 120;
+        speedValue.textContent = `${Number(speedSlider.value).toFixed(2)}x`;
+      });
+
+      ["pointerdown", "click", "input", "change"].forEach((eventName) => {
+        speedSlider.addEventListener(eventName, (event) => {
+          event.stopPropagation();
+        });
+      });
+
+      window.addEventListener("resize", handleResize);
+
+      buildVibeLookup();
+      makeShelf();
+      updateHover(favorites[0]);
+      createSprites();
+      animationFrame = requestAnimationFrame(step);
+    })();
+  </script>
+{% endblock %}

@@ -1,0 +1,1127 @@
+{% extends "layout.html" %}
+{% from "components/fieldset.html" import fieldset %}
+
+{% block head_extra %}
+  <style>
+    .travel-shell {
+      --travel-home-color: #4c77b0;
+      overflow: hidden;
+      background: var(--site-panel);
+      border: 1px solid var(--site-border);
+      box-shadow: 6px 6px 0 var(--site-shadow);
+    }
+
+    .travel-stage-wrap {
+      position: relative;
+    }
+
+    .travel-stage {
+      position: relative;
+      min-height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          color-mix(in srgb, var(--site-text) 7%, transparent) 0,
+          color-mix(in srgb, var(--site-text) 7%, transparent) 1px,
+          transparent 1px,
+          transparent 18px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          color-mix(in srgb, var(--site-text) 7%, transparent) 0,
+          color-mix(in srgb, var(--site-text) 7%, transparent) 1px,
+          transparent 1px,
+          transparent 18px
+        ),
+        var(--site-panel);
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .travel-stage:active {
+      cursor: grabbing;
+    }
+
+    .globe-container {
+      position: relative;
+      width: min(72vw, 560px);
+      max-width: 100%;
+      aspect-ratio: 1;
+    }
+
+    .globe-canvas {
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.12));
+    }
+
+    .travel-hud {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      padding: 0.55rem 0.7rem;
+      background: color-mix(in srgb, var(--site-panel) 94%, transparent);
+      border: 1px solid var(--site-border);
+      box-shadow: 4px 4px 0 var(--site-shadow);
+    }
+
+    .travel-legend {
+      position: absolute;
+      left: 1rem;
+      bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      padding: 0.7rem 0.8rem;
+      background: color-mix(in srgb, var(--site-panel) 94%, transparent);
+      border: 1px solid var(--site-border);
+      box-shadow: 4px 4px 0 var(--site-shadow);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.75rem;
+    }
+
+    .travel-tooltip {
+      position: absolute;
+      left: 0;
+      top: 0;
+      pointer-events: none;
+      transform: translate(-50%, calc(-100% - 14px));
+      padding: 0.4rem 0.55rem;
+      background: color-mix(in srgb, var(--site-panel) 96%, transparent);
+      border: 1px solid var(--site-border);
+      box-shadow: 3px 3px 0 var(--site-shadow);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 120ms ease;
+    }
+
+    .travel-tooltip.is-visible {
+      opacity: 1;
+    }
+
+    .travel-legend-row {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .travel-marker-card {
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
+      width: min(280px, calc(100% - 2rem));
+      display: none;
+      flex-direction: column;
+      gap: 0.55rem;
+      padding: 0.8rem;
+      background: color-mix(in srgb, var(--site-panel) 96%, transparent);
+      border: 1px solid var(--site-border);
+      box-shadow: 4px 4px 0 var(--site-shadow);
+    }
+
+    .travel-marker-card.is-open {
+      display: flex;
+    }
+
+    .travel-marker-card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.8rem;
+      align-items: start;
+    }
+
+    .travel-marker-card-head p,
+    .travel-marker-card-copy p {
+      margin: 0;
+    }
+
+    .travel-marker-card-label {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--site-muted);
+    }
+
+    .travel-marker-card-title {
+      margin-top: 0.2rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .travel-marker-card-close {
+      width: 1.85rem;
+      height: 1.85rem;
+      border: 1px solid var(--site-border-strong);
+      background: var(--site-panel);
+      box-shadow: 2px 2px 0 var(--site-shadow);
+      font-size: 0.92rem;
+      line-height: 1;
+    }
+
+    .travel-marker-card-close:hover {
+      background: var(--site-text);
+      color: var(--site-panel);
+    }
+
+    .travel-marker-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border: 1px solid var(--site-border);
+      margin: 0;
+    }
+
+    .travel-marker-card-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      font-size: 0.84rem;
+      line-height: 1.45;
+      color: var(--site-muted);
+    }
+
+    .legend-check {
+      width: 14px;
+      height: 14px;
+      background: #1ca34b;
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .legend-home {
+      position: relative;
+      width: 10px;
+      height: 8px;
+      background: var(--travel-home-color);
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    .legend-home::before {
+      content: "";
+      position: absolute;
+      top: -5px;
+      left: -2px;
+      width: 0;
+      height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-bottom: 5px solid var(--travel-home-color);
+    }
+
+    .legend-pin {
+      position: relative;
+      width: 12px;
+      height: 12px;
+      background: #d7263d;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .legend-pin::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 10px;
+      width: 2px;
+      height: 10px;
+      margin-left: -1px;
+      background: #7c1320;
+    }
+
+    .travel-marquee {
+      overflow: hidden;
+      border-top: 1px solid var(--site-border);
+      background: var(--site-panel);
+    }
+
+    .travel-track {
+      display: flex;
+      width: max-content;
+      padding: 1rem;
+      animation: travel-scroll 40s linear infinite;
+    }
+
+    .travel-card {
+      width: 260px;
+      flex: 0 0 auto;
+      margin-right: 1rem;
+      border: 1px solid var(--site-border);
+      background: var(--site-panel);
+      padding: 0.75rem;
+      box-shadow: 4px 4px 0 var(--site-shadow);
+    }
+
+    .travel-card img {
+      width: 100%;
+      height: 176px;
+      object-fit: cover;
+      border: 1px solid var(--site-border);
+      margin: 0;
+    }
+
+    .travel-card p {
+      margin: 0.65rem 0 0;
+      font-size: 0.92rem;
+      line-height: 1.35;
+    }
+
+    @keyframes travel-scroll {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .travel-stage {
+        min-height: 320px;
+        padding: 0.5rem;
+      }
+
+      .globe-container {
+        width: min(82vw, 420px);
+      }
+
+      .travel-card {
+        width: 220px;
+      }
+
+      .travel-card img {
+        height: 150px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .travel-stage {
+        min-height: 250px;
+        padding: 0.35rem;
+      }
+
+      .globe-container {
+        width: min(78vw, 320px);
+      }
+
+      .travel-hud {
+        display: none;
+      }
+
+      .travel-legend {
+        left: 0.55rem;
+        bottom: 0.55rem;
+        padding: 0.45rem 0.55rem;
+        gap: 0.3rem;
+        font-size: 0.64rem;
+      }
+
+      .travel-marker-card {
+        position: static;
+        width: auto;
+        margin: 0.75rem;
+        box-shadow: 4px 4px 0 var(--site-shadow);
+      }
+
+      .travel-marker-card img {
+        height: 132px;
+      }
+
+      .travel-track {
+        padding: 0.7rem;
+        animation-duration: 48s;
+      }
+
+      .travel-card {
+        width: 180px;
+        padding: 0.55rem;
+        margin-right: 0.7rem;
+      }
+
+      .travel-card img {
+        height: 118px;
+      }
+
+      .travel-card p {
+        margin-top: 0.45rem;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="flex flex-col gap-4">
+    {% call fieldset("cat ~/random/travel.md") %}
+      <div class="travel-shell">
+        <div class="travel-stage-wrap">
+          <div class="travel-stage" id="travel-globe-wrap">
+            <div class="globe-container">
+              <canvas
+                id="travel-globe"
+                class="globe-canvas"
+                width="420"
+                height="420"
+              ></canvas>
+
+              <div class="travel-tooltip" id="travel-tooltip"></div>
+            </div>
+
+            <div class="travel-hud">
+              <div>travel.exe</div>
+              <div>drag to rotate</div>
+              <div>wheel or pinch to zoom</div>
+            </div>
+
+            <div class="travel-legend">
+              <div class="travel-legend-row">
+                <span class="legend-home"></span>
+                <span>home</span>
+              </div>
+              <div class="travel-legend-row">
+                <span class="legend-check">v</span>
+                <span>been there</span>
+              </div>
+              <div class="travel-legend-row">
+                <span class="legend-pin"></span>
+                <span>bucket list</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="travel-marker-card" id="travel-marker-card" aria-live="polite">
+            <div class="travel-marker-card-head">
+              <div>
+                <p class="travel-marker-card-label" id="travel-marker-kind">been there</p>
+                <p class="travel-marker-card-title" id="travel-marker-title">New York City</p>
+              </div>
+              <button type="button" class="travel-marker-card-close" id="travel-marker-close">x</button>
+            </div>
+            <img id="travel-marker-image" src="" alt="" aria-hidden="true" />
+            <div class="travel-marker-card-copy">
+              <p id="travel-marker-caption">one of the places i keep ending up and still don't mind repeating.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="travel-marquee">
+          <div class="travel-track">
+            <div class="travel-card">
+              <img src="/assets/travel/bern switzerland.jpg" alt="Bern Switzerland" />
+              <p>Bern, Switzerland</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/rothenburg ob der tauber.jpg" alt="Rothenburg ob der Tauber" />
+              <p>Rothenburg ob der Tauber, Germany</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/santa claus village.jpg" alt="Santa Claus Village" />
+              <p>Santa Claus Village, Rovaniemi, Lapland, Finland</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/hollywood walk of fame.jpg" alt="Hollywood Walk of Fame" />
+              <p>Hollywood Walk of Fame, LA, California, USA</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/reindeer.jpg" alt="reindeer" />
+              <p>Rovaniemi, Lapland, Finland</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/antelope canyon.jpg" alt="Antelope Canyon" />
+              <p>Antelope Canyon, Arizona, USA</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/jungfrau.jpg" alt="Jungfrau" />
+              <p>Jungfrau, Switzerland</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/old faithful.jpg" alt="Old faithful" />
+              <p>Old faithful, Yellowstone National Park, USA</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/shizukuishi.jpg" alt="Shizukuishi" />
+              <p>Shizukuishi, Japan</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/yilan.jpg" alt="Yilan Taiwan" />
+              <p>Yilan, Taiwan</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/grand canyon national park.jpg" alt="Grand Canyon National Park" />
+              <p>Grand Canyon National Park, Arizona, USA</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/helsinki.jpg" alt="helsinki" />
+              <p>Helsinki, Finland</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/horseshoe bend.jpg" alt="Horseshoe Bend" />
+              <p>Horseshoe Bend, Arizona, USA</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/blue house.jpg" alt="Blue House" />
+              <p>Blue House, Seoul, South Korea </p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/george washington memorial park.jpg" alt="George Washington Memorial Park" />
+              <p>George Washington Memorial Park, Philadelphia, Pennsylvania, USA </p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/zugspitze.jpg" alt="Zugspitze" />
+              <p>Zugspitze, Germany</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/SLC utah 2.jpg" alt="SLC Utah" />
+              <p>Utah State Capitol, Salt Lake City, Utah, USA</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/santa claus village 2.jpg" alt="Santa Claus Village" />
+              <p>Santa Claus Village, Rovaniemi, Lapland, Finland</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/osaka.jpg" alt="Osaka" />
+              <p>Universal Studios Japan, Osaka, Japan</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/bryce canyon national park.jpg" alt="Bryce Canyon National Park" />
+              <p>Bryce Canyon National Park, Utah, USA</p>
+            </div>
+            <!--  -->
+            <div class="travel-card">
+              <img src="/assets/travel/bern switzerland.jpg" alt="Bern Switzerland" />
+              <p>Bern, Switzerland</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/rothenburg ob der tauber.jpg" alt="Rothenburg ob der Tauber" />
+              <p>Rothenburg ob der Tauber, Germany</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/santa claus village.jpg" alt="Santa Claus Village" />
+              <p>Santa Claus Village, Rovaniemi, Lapland, Finland</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/hollywood walk of fame.jpg" alt="Hollywood Walk of Fame" />
+              <p>Hollywood Walk of Fame, LA, California, USA</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/reindeer.jpg" alt="reindeer" />
+              <p>Rovaniemi, Lapland, Finland</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/antelope canyon.jpg" alt="Antelope Canyon" />
+              <p>Antelope Canyon, Arizona, USA</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/jungfrau.jpg" alt="Jungfrau" />
+              <p>Jungfrau, Switzerland</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/old faithful.jpg" alt="Old faithful" />
+              <p>Old faithful, Yellowstone National Park, USA</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/shizukuishi.jpg" alt="Shizukuishi" />
+              <p>Shizukuishi, Japan</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/yilan.jpg" alt="Yilan Taiwan" />
+              <p>Yilan, Taiwan</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/grand canyon national park.jpg" alt="Grand Canyon National Park" />
+              <p>Grand Canyon National Park, Arizona, USA</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/helsinki.jpg" alt="helsinki" />
+              <p>Helsinki, Finland</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/horseshoe bend.jpg" alt="Horseshoe Bend" />
+              <p>Horseshoe Bend, Arizona, USA</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/blue house.jpg" alt="Blue House" />
+              <p>Blue House, Seoul, South Korea </p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/george washington memorial park.jpg" alt="George Washington Memorial Park" />
+              <p>George Washington Memorial Park, Philadelphia, Pennsylvania, USA </p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/zugspitze.jpg" alt="Zugspitze" />
+              <p>Zugspitze, Germany</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/SLC utah 2.jpg" alt="SLC Utah" />
+              <p>Utah State Capitol, Salt Lake City, Utah, USA</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/santa claus village 2.jpg" alt="Santa Claus Village" />
+              <p>Santa Claus Village, Rovaniemi, Lapland, Finland</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/osaka.jpg" alt="Osaka" />
+              <p>Universal Studios Japan, Osaka, Japan</p>
+            </div>
+            <div class="travel-card">
+              <img src="/assets/travel/bryce canyon national park.jpg" alt="Bryce Canyon National Park" />
+              <p>Bryce Canyon National Park, Utah, USA</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endcall %}
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+  <script>
+    (() => {
+      const wrap = document.getElementById("travel-globe-wrap");
+      const canvas = document.getElementById("travel-globe");
+      const tooltip = document.getElementById("travel-tooltip");
+      const markerCard = document.getElementById("travel-marker-card");
+      const markerCardKind = document.getElementById("travel-marker-kind");
+      const markerCardTitle = document.getElementById("travel-marker-title");
+      const markerCardImage = document.getElementById("travel-marker-image");
+      const markerCardCaption = document.getElementById("travel-marker-caption");
+      const markerCardClose = document.getElementById("travel-marker-close");
+      const ctx = canvas.getContext("2d");
+      const homeColor = getComputedStyle(wrap || document.documentElement)
+        .getPropertyValue('--travel-home-color')
+        .trim() || '#f6b53b';
+      const markerDetails = {
+        "Japan": {
+          image: "/assets/travel/japan.jpg",
+          caption: "one of the places i keep revisiting and still haven't gotten tired of."
+        },
+        "Seoul": {
+          image: "/assets/travel/korea.jpg",
+          caption: "came here for shopping and snow-boarding!"
+        },
+        "Salt Lake City": {
+          image: "/assets/travel/SLC utah 1.jpg",
+          caption: "all i can think about is hot and beautiful views."
+        },
+        "Los Angeles": {
+          image: "/assets/travel/los angeles.jpg",
+          caption: "hollywood, palm trees, and sunny city streets."
+        },
+        "San Francisco": {
+          image: "/assets/travel/san francisco.jpg",
+          caption: "the crisp, cool weather here is amazing. easily my favorite part about the city."
+        },
+        "Singapore": {
+          image: "/assets/travel/singapore.jpg",
+          caption: "one of the cleanest and easiest cities to navigate i've been to."
+        },
+        "New Zealand": {
+          image: "/assets/travel/new zealand.jpg",
+          caption: "endless mountains, crystal clear water, and the freshest air i've ever breathed."
+        },
+        "Switzerland": {
+          image: "/assets/travel/switzerland.jpg",
+          caption: "the kind of place where the air just hits different and the views don't even feel real."
+        },
+        "Paris": {
+          image: "/assets/travel/paris.jpg",
+          caption: "a walking cliché in the best way possible. sitting at a cafe here just hits different."
+        },
+        "Rome": {
+          image: "/assets/travel/rome.jpg",
+          caption: "basically a massive outdoor museum. mind-blowing how much ancient stuff is just casually sitting there."
+        },
+        "Venezia": {
+          image: "/assets/travel/venezia.jpg",
+          caption: "basically a floating maze. getting lost in the narrow alleys is the only right way to do it."
+        },
+        "Germany": {
+          image: "/assets/travel/germany.jpg",
+          caption: "the shear number of castles here is crazy. history is just a normal part of the landscape."
+        },
+        "Finland": {
+          image: "/assets/travel/finland.jpg",
+          caption: "love the santa and reindeers, but definitely freezing my face off >_<"
+        },
+        "Philippines": {
+          image: "/assets/travel/philippines.jpg",
+          caption: "water days and whale shark moments."
+        },
+        "Malaysia": {
+          image: "/assets/travel/malaysia.jpg",
+          caption: "legoland, hot weather, and me having the best day."
+        },
+        "Taipei": {
+          image: "/assets/travel/taipei.jpg",
+          caption: "Taipei, Taiwan - my home base!"
+        }
+      };
+
+      const home = [
+        { name: "Taipei", coords: [121.5654, 25.0330], kind: "home" }
+      ];
+
+      const visited = [
+        { name: "Japan", coords: [139.6917, 35.6895], kind: "visited" },
+        { name: "Seoul", coords: [126.978, 37.5665], kind: "visited" },
+        { name: "Salt Lake City", coords: [-111.891, 40.7608], kind: "visited" },
+        { name: "Los Angeles", coords: [-118.2437, 34.0522], kind: "visited" },
+        { name: "San Francisco", coords: [-122.4194, 37.7749], kind: "visited" },
+        { name: "Singapore", coords: [103.8198, 1.3521], kind: "visited" },
+        { name: "Malaysia", coords: [101.5310, 3.1384], kind: "visited" },
+        { name: "Philippines", coords: [123.5356, 10.7554], kind: "visited" },
+        { name: "Paris", coords: [2.2646, 48.8566], kind: "visited" },
+        { name: "Rome", coords: [12.4964, 41.9028], kind: "visited" },
+        { name: "Venezia", coords: [12.0576, 45.4040], kind: "visited" },
+        { name: "Germany", coords: [10.4515, 51.1657], kind: "visited" },
+        { name: "Switzerland", coords: [6.9050, 46.8056], kind: "visited" },
+        { name: "New Zealand", coords: [172.0, -41.0], kind: "visited" },
+        { name: "Finland", coords: [25.8473, 66.5441], kind: "visited" },
+      ];
+
+      const wishlist = [
+        { name: "New York City", coords: [-74.006, 40.7128], kind: "wishlist" },
+        { name: "Seattle", coords: [-122.3321, 47.6062], kind: "wishlist" },
+        { name: "Washington, D.C.", coords: [-77.0369, 38.9072], kind: "wishlist" },
+        { name: "Shanghai", coords: [121.4737, 31.2304], kind: "wishlist" },
+        { name: "Beijing", coords: [116.4074, 39.9042], kind: "wishlist" },
+        { name: "Australia", coords: [133.7767, -25.2744], kind: "wishlist" },
+        { name: "Sweden", coords: [15.0, 62.0], kind: "wishlist" },
+        { name: "Thailand", coords: [100.9925, 15.87], kind: "wishlist" },
+        { name: "Vietnam", coords: [105.8542, 21.0245], kind: "wishlist" }
+      ];
+
+      const projection = d3
+        .geoOrthographic()
+        .translate([canvas.width / 2, canvas.height / 2])
+        .scale(canvas.width * 0.41)
+        .clipAngle(90)
+        .precision(0.3)
+        .rotate([-121.56, -25.03]);
+
+      const path = d3.geoPath(projection, ctx);
+      const graticule = d3.geoGraticule10();
+      const sphere = { type: "Sphere" };
+      const markers = [...home, ...wishlist, ...visited];
+      const pointerMap = new Map();
+      const baseScale = canvas.width * 0.41;
+      const minScale = canvas.width * 0.28;
+      const maxScale = canvas.width * 0.68;
+
+      let countries = null;
+      let isDragging = false;
+      let dragStart = null;
+      let rotationStart = projection.rotate().slice();
+      let autoSpin = true;
+      let autoSpinTimer = null;
+      let hoveredMarker = null;
+      let hoveredPoint = null;
+      let pinchStartDistance = null;
+      let pinchStartScale = projection.scale();
+      let selectedMarker = null;
+
+      let canvasRect = canvas.getBoundingClientRect();
+      window.addEventListener("resize", () => {
+        canvasRect = canvas.getBoundingClientRect();
+      });
+
+      function getCanvasCoords(event) {
+        return {
+          x: (event.clientX - canvasRect.left) * (canvas.width / canvasRect.width),
+          y: (event.clientY - canvasRect.top) * (canvas.height / canvasRect.height)
+        };
+      }
+
+      function openMarkerCard(marker) {
+        const details = markerDetails[marker.name];
+        if (marker.kind === "home") {
+          markerCardKind.textContent = "home";
+        } else {
+          markerCardKind.textContent = marker.kind === "visited" ? "been there" : "bucket list";
+        }
+        markerCardTitle.textContent = marker.name;
+        if (details && details.image) {
+          markerCardImage.src = details.image;
+          markerCardImage.alt = marker.name;
+          markerCardImage.style.display = "";
+          markerCardCaption.textContent = details.caption;
+        } else {
+          markerCardImage.style.display = "none";
+          markerCardCaption.textContent =
+            details ? details.caption : (
+            marker.kind === "home"
+              ? "this is my home base."
+              : (marker.kind === "visited"
+                ? "i've been here, photos coming soon!!"
+                : "still on the list. photo comes after the plane ticket :D"));
+        }
+        markerCard.classList.add("is-open");
+        selectedMarker = marker;
+      }
+
+      function closeMarkerCard() {
+        markerCard.classList.remove("is-open");
+        selectedMarker = null;
+      }
+
+      function setTooltip(marker, point) {
+        if (!marker || !point) {
+          tooltip.classList.remove("is-visible");
+          hoveredMarker = null;
+          hoveredPoint = null;
+          return;
+        }
+
+        hoveredMarker = marker;
+        hoveredPoint = point;
+        tooltip.textContent = marker.name;
+
+        // Map canvas coordinate (point) to CSS pixels relative to the container
+        const cssX = point[0] * (canvasRect.width / canvas.width);
+        const cssY = point[1] * (canvasRect.height / canvas.height);
+
+        tooltip.style.left = `${cssX}px`;
+        tooltip.style.top = `${cssY}px`;
+        tooltip.classList.add("is-visible");
+      }
+
+      function clampScale(nextScale) {
+        return Math.max(minScale, Math.min(maxScale, nextScale));
+      }
+
+      function scheduleAutoSpin() {
+        if (autoSpinTimer) {
+          clearTimeout(autoSpinTimer);
+        }
+
+        autoSpinTimer = setTimeout(() => {
+          if (!isDragging && pointerMap.size === 0) {
+            autoSpin = true;
+          }
+        }, 5000);
+      }
+
+      function markInteraction() {
+        autoSpin = false;
+        scheduleAutoSpin();
+      }
+
+      function distanceBetweenPointers() {
+        const points = [...pointerMap.values()];
+        if (points.length < 2) {
+          return null;
+        }
+
+        const dx = points[0].x - points[1].x;
+        const dy = points[0].y - points[1].y;
+        return Math.hypot(dx, dy);
+      }
+
+      function zoomBy(factor) {
+        projection.scale(clampScale(projection.scale() * factor));
+        draw();
+      }
+
+      function getVisiblePoint(marker) {
+        const point = projection(marker.coords);
+        if (!point) {
+          return null;
+        }
+
+        const center = projection.invert(point);
+        if (!center) {
+          return null;
+        }
+
+        const visible = d3.geoDistance(center, marker.coords) < Math.PI / 2;
+        return visible ? point : null;
+      }
+
+      function findMarkerAtPoint(x, y) {
+        for (const marker of markers) {
+          const point = getVisiblePoint(marker);
+          if (!point) {
+            continue;
+          }
+
+          // Set hit radius to 12px for more precise hovering and clicking
+          const hitRadius = 12;
+          if (Math.hypot(point[0] - x, point[1] - y) <= hitRadius) {
+            return { marker, point };
+          }
+        }
+
+        return null;
+      }
+
+      function drawPixelCheck(x, y, alpha = 1) {
+        ctx.save();
+        ctx.translate(Math.round(x), Math.round(y));
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = "#1ca34b";
+        ctx.fillRect(-7, -7, 14, 14);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(-4, 0, 2, 2);
+        ctx.fillRect(-2, 2, 2, 2);
+        ctx.fillRect(0, 0, 2, 2);
+        ctx.fillRect(2, -2, 2, 2);
+        ctx.fillRect(4, -4, 2, 2);
+        ctx.restore();
+      }
+
+      function drawPushPin(x, y, alpha = 1) {
+        ctx.save();
+        ctx.translate(Math.round(x), Math.round(y));
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = "#d7263d";
+        ctx.beginPath();
+        ctx.arc(0, -4, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#7c1320";
+        ctx.fillRect(-1, 2, 2, 10);
+        ctx.restore();
+      }
+
+      function drawHomeMarker(x, y, alpha = 1) {
+        ctx.save();
+        ctx.translate(Math.round(x), Math.round(y));
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = homeColor; // using CSS variable
+        // Roof (matching legend width 14px, height 5px, centered)
+        ctx.fillRect(-7, -1, 14, 1);
+        ctx.fillRect(-5, -2, 10, 1);
+        ctx.fillRect(-4, -3, 8, 1);
+        ctx.fillRect(-2, -4, 4, 1);
+        ctx.fillRect(-1, -5, 2, 1);
+        // Base (width 10px, height 8px, drawn with a hollow center door for transparency)
+        ctx.fillRect(-5, 0, 10, 4); // upper base
+        ctx.fillRect(-5, 4, 4, 4);  // left bottom base
+        ctx.fillRect(1, 4, 4, 4);   // right bottom base
+        ctx.restore();
+      }
+
+      function drawMarker(marker) {
+        const point = projection(marker.coords);
+        if (!point) {
+          return;
+        }
+
+        const center = projection.invert(point);
+        if (!center) {
+          return;
+        }
+
+        const visible = d3.geoDistance(center, marker.coords) < Math.PI / 2;
+        const alpha = visible ? 1 : 0.22;
+
+        if (marker.kind === "home") {
+          drawHomeMarker(point[0], point[1], alpha);
+        } else if (marker.kind === "visited") {
+          drawPixelCheck(point[0], point[1], alpha);
+        } else {
+          drawPushPin(point[0], point[1] - 2, alpha);
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const isDark = document.documentElement.classList.contains("dark");
+        const sphereFill = isDark ? "rgba(255, 255, 255, 0.04)" : "rgba(0, 0, 0, 0.025)";
+        const countryFill = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)";
+        const countryStroke = isDark ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.16)";
+        const graticuleStroke = isDark ? "rgba(255, 255, 255, 0.14)" : "rgba(0, 0, 0, 0.12)";
+        const sphereStroke = isDark ? "rgba(255, 255, 255, 0.45)" : "rgba(0, 0, 0, 0.3)";
+
+        ctx.save();
+        path(sphere);
+        ctx.clip();
+
+        ctx.fillStyle = sphereFill;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (countries) {
+          ctx.beginPath();
+          path(countries);
+          ctx.fillStyle = countryFill;
+          ctx.fill();
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = countryStroke;
+          ctx.stroke();
+        }
+
+        ctx.beginPath();
+        path(graticule);
+        ctx.lineWidth = 0.55;
+        ctx.strokeStyle = graticuleStroke;
+        ctx.stroke();
+
+        markers.forEach(drawMarker);
+        ctx.restore();
+
+        ctx.beginPath();
+        path(sphere);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = sphereStroke;
+        ctx.stroke();
+
+        if (hoveredMarker) {
+          const point = getVisiblePoint(hoveredMarker);
+          if (point) {
+            setTooltip(hoveredMarker, point);
+          } else {
+            setTooltip(null, null);
+          }
+        }
+
+        if (selectedMarker) {
+          const point = projection(selectedMarker.coords);
+          if (!point) {
+            closeMarkerCard();
+          }
+        }
+      }
+
+      function animate() {
+        if (autoSpin && !isDragging) {
+          const [lambda, phi, gamma] = projection.rotate();
+          projection.rotate([lambda - 0.07, phi, gamma]);
+        }
+
+        draw();
+        requestAnimationFrame(animate);
+      }
+
+      canvas.addEventListener("pointerdown", (event) => {
+        canvasRect = canvas.getBoundingClientRect(); // Refresh the rect cache when user interacts
+        const coords = getCanvasCoords(event);
+        pointerMap.set(event.pointerId, coords);
+        isDragging = true;
+        markInteraction();
+        dragStart = [event.clientX, event.clientY];
+        rotationStart = projection.rotate().slice();
+        canvas.setPointerCapture(event.pointerId);
+
+        if (pointerMap.size === 2) {
+          pinchStartDistance = distanceBetweenPointers();
+          pinchStartScale = projection.scale();
+          isDragging = false;
+          dragStart = null;
+        }
+      });
+
+      canvas.addEventListener("pointermove", (event) => {
+        const coords = getCanvasCoords(event);
+        pointerMap.set(event.pointerId, coords);
+
+        if (pointerMap.size >= 2) {
+          markInteraction();
+          const currentDistance = distanceBetweenPointers();
+          if (pinchStartDistance && currentDistance) {
+            projection.scale(
+              clampScale(pinchStartScale * (currentDistance / pinchStartDistance))
+            );
+            draw();
+          }
+          return;
+        }
+
+        if (isDragging && dragStart) {
+          markInteraction();
+          const dx = event.clientX - dragStart[0];
+          const dy = event.clientY - dragStart[1];
+          projection.rotate([
+            rotationStart[0] + dx * 0.35,
+            Math.max(-65, Math.min(65, rotationStart[1] - dy * 0.35)),
+            rotationStart[2]
+          ]);
+          canvas.style.cursor = "grabbing"; // grabbing cursor when dragging
+          draw();
+          return;
+        }
+
+        const hit = findMarkerAtPoint(coords.x, coords.y);
+        if (hit) {
+          setTooltip(hit.marker, hit.point);
+          canvas.style.cursor = "pointer"; // pointer cursor on hover
+        } else {
+          setTooltip(null, null);
+          canvas.style.cursor = "grab"; // default grab cursor
+        }
+      });
+
+      function stopDragging(event) {
+        pointerMap.delete(event.pointerId);
+        isDragging = false;
+        dragStart = null;
+        if (pointerMap.size < 2) {
+          pinchStartDistance = null;
+          pinchStartScale = projection.scale();
+        }
+        scheduleAutoSpin();
+      }
+
+      canvas.addEventListener("wheel", (event) => {
+        event.preventDefault();
+        markInteraction();
+        zoomBy(event.deltaY > 0 ? 0.94 : 1.06);
+      });
+
+      canvas.addEventListener("pointerup", stopDragging);
+      canvas.addEventListener("pointercancel", stopDragging);
+      canvas.addEventListener("pointerleave", (event) => {
+        if (!isDragging) {
+          setTooltip(null, null);
+        }
+        stopDragging(event);
+      });
+
+      canvas.addEventListener("click", (event) => {
+        const coords = getCanvasCoords(event);
+        const hit = findMarkerAtPoint(coords.x, coords.y);
+        if (hit) {
+          openMarkerCard(hit.marker);
+        } else {
+          closeMarkerCard();
+        }
+      });
+
+      markerCardClose.addEventListener("click", () => {
+        closeMarkerCard();
+      });
+
+      fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json")
+        .then((response) => response.json())
+        .then((world) => {
+          countries = topojson.feature(world, world.objects.countries);
+          draw();
+        })
+        .catch(() => {
+          draw();
+        });
+
+      animate();
+    })();
+  </script>
+{% endblock %}

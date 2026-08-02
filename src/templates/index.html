@@ -1,0 +1,917 @@
+{% extends "layout.html" %}
+{% from "components/fieldset.html" import fieldset %}
+{% from "components/button.html" import button %}
+
+{% block head_extra %}
+<style>
+  .experience-card {
+    position: relative;
+    background: var(--site-panel);
+  }
+
+  .favorite-star {
+    position: absolute;
+    right: 0.6rem;
+    bottom: 0.55rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--site-panel) 92%, transparent);
+    border: 1px solid var(--site-border);
+    border-radius: 999px;
+    box-shadow: 2px 2px 0 var(--site-shadow);
+    pointer-events: none;
+  }
+
+  .favorite-star::before {
+    content: "";
+    width: 0.9rem;
+    height: 0.9rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f2c94c' stroke='%23b58900' stroke-width='1.4' d='M12 2.2l2.8 5.68 6.27.91-4.54 4.43 1.07 6.25L12 16.5l-5.6 2.97 1.07-6.25L2.93 8.79l6.27-.91z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .profile-photo-wrap {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .profile-photo-wrap img {
+    transition: opacity 0.2s ease;
+  }
+
+  .profile-photo-wrap .photo-alt {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+
+  .profile-photo-wrap:hover .photo-main {
+    opacity: 0;
+  }
+
+  .profile-photo-wrap:hover .photo-alt {
+    opacity: 1;
+  }
+
+  .easter-egg-note {
+    position: absolute;
+    bottom: -2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+
+  .profile-photo-wrap:hover .easter-egg-note {
+    opacity: 0.7;
+  }
+
+  .experience-inline-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 1.35rem;
+    padding: 0 0.45rem;
+    border: 1px solid var(--site-border-strong);
+    background: var(--site-panel);
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 2px 2px 0 var(--site-shadow);
+  }
+
+  .experience-inline-button:hover {
+    background: var(--site-text);
+    color: var(--site-panel);
+  }
+
+  .proof-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 1.5rem;
+    padding: 0 0.5rem;
+    border: 1px solid var(--site-border-strong);
+    background: var(--site-panel-soft);
+    color: inherit;
+    text-decoration: none;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 2px 2px 0 var(--site-shadow);
+  }
+
+  .proof-chip:hover {
+    background: var(--site-text);
+    color: var(--site-panel);
+  }
+
+  .experience-gallery {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.58);
+  }
+
+  .experience-gallery.is-open {
+    display: flex;
+  }
+
+  .experience-gallery-panel {
+    width: min(920px, 100%);
+    max-height: min(80vh, 760px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--site-border);
+    background: var(--site-panel);
+    box-shadow: 6px 6px 0 var(--site-shadow);
+  }
+
+  .experience-gallery-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--site-border);
+    background: var(--site-panel-soft);
+  }
+
+  .experience-gallery-head h3,
+  .experience-gallery-head p {
+    margin: 0;
+  }
+
+  .experience-gallery-head h3 {
+    font-size: 1rem;
+  }
+
+  .experience-gallery-head p {
+    margin-top: 0.15rem;
+    font-size: 0.84rem;
+    opacity: 0.68;
+  }
+
+  .experience-gallery-close {
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--site-border-strong);
+    background: var(--site-panel);
+    font-size: 1rem;
+    line-height: 1;
+    box-shadow: 2px 2px 0 var(--site-shadow);
+  }
+
+  .experience-gallery-close:hover {
+    background: var(--site-text);
+    color: var(--site-panel);
+  }
+
+  .experience-gallery-grid {
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+    padding: 1rem;
+    background: var(--site-panel);
+  }
+
+  .experience-gallery-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    border: 1px solid var(--site-border);
+    background: var(--site-panel-soft);
+    padding: 0.6rem;
+  }
+
+  .experience-gallery-item img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border: 1px solid var(--site-border);
+    margin: 0;
+  }
+
+  .experience-gallery-item p {
+    margin: 0;
+    font-size: 0.84rem;
+    line-height: 1.35;
+  }
+
+  @media (max-width: 700px) {
+    .experience-gallery-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .home-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .home-mini-card {
+    border: 1px solid var(--site-border);
+    background: var(--site-panel);
+    padding: 0.8rem;
+    box-shadow: 4px 4px 0 var(--site-shadow);
+  }
+
+  .home-mini-card p {
+    margin: 0;
+  }
+
+  .home-mini-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.74rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--site-muted);
+  }
+
+  .home-mini-value {
+    margin-top: 0.35rem;
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  .project-card {
+    position: relative;
+    background: var(--site-panel);
+  }
+
+  .project-card .favorite-star {
+    top: 0.55rem;
+    bottom: auto;
+  }
+
+  .project-row {
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-start;
+  }
+
+  .project-thumb {
+    width: 96px;
+    height: 56px;
+    flex: 0 0 96px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    object-fit: cover;
+    align-self: flex-start;
+  }
+
+  .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .project-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 1.75rem;
+    padding: 0 0.65rem;
+    border: 1px solid var(--site-border-strong);
+    background: var(--site-panel);
+    color: inherit;
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 3px 3px 0 var(--site-shadow-strong);
+  }
+
+  .project-link:hover {
+    background: var(--site-text);
+    color: var(--site-panel);
+  }
+
+  @media (max-width: 900px) {
+    .home-grid-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .home-grid-4 {
+      grid-template-columns: 1fr;
+    }
+
+    .project-row {
+      gap: 0.55rem;
+    }
+
+    .project-thumb {
+      width: 88px;
+      height: 52px;
+      flex-basis: 88px;
+    }
+
+    .project-copy {
+      min-width: 0;
+    }
+
+    .project-copy p {
+      word-break: break-word;
+    }
+
+    .project-link {
+      height: 1.6rem;
+      padding: 0 0.55rem;
+      font-size: 0.68rem;
+      box-shadow: 2px 2px 0 var(--site-shadow);
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-4">
+  <!-- <WhoAmI /> -->
+  {% call fieldset("whoami") %}
+  <article class="text-lg prose-p:m-0 flex flex-col-reverse sm:block">
+    <div
+      class="profile-photo-wrap mt-4 mx-auto w-56 max-w-full sm:float-right sm:mt-0 sm:ml-4 sm:mb-4 sm:mx-0 sm:w-52 md:w-60 lg:w-64">
+      <img src="/assets/me.jpg" alt="Portrait of William Chen" class="photo-main w-full object-cover" loading="eager" />
+      <img src="/assets/me_alt.jpg" alt="Goofy portrait of William Chen" class="photo-alt w-full object-cover"
+        loading="eager" />
+      <span class="easter-egg-note">you found my easter egg!</span>
+    </div>
+    <div class="flex flex-col gap-4">
+      <p>
+        Hii!! I'm William from Taiwan, and also a master's student at the College of Semiconductor Research, NTHU, currently in a VLSI/CAD lab.
+      </p>
+      <p>
+        Outside of school, I spend my time playing video games, skiing when I get the chance, and planning trips that somehow always become more complicated than expected.
+      </p>
+      <p>
+         This site is a mix of projects, travel memories, favorites, and small pieces of life I wanted to put somewhere.
+      </p>
+      <p>
+        Feel free to reach out to me on LinkedIn or Instagram!
+      </p>
+    </div>
+    <div class="clear-right"></div>
+  </article>
+  {% endcall %}
+  {% call fieldset("cat ~/random.md") %}
+  <div class="flex flex-col gap-3 text-lg">
+    <div class="flex flex-col gap-1">
+      <p class="m-0">a collection of things that make me, me. featuring the formal cv, travel snaps, current hyperfixations, a wall of wins, and some personal lore.</p>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 pt-1">
+      {% call button("/random/cv", "w-full h-9 text-base font-bold me-0 !justify-start") %}
+      <span>CV</span>
+      {% endcall %}
+      {% call button("/random/travel", "w-full h-9 text-base font-bold me-0 !justify-start") %}
+      <span>Travel</span>
+      {% endcall %}
+      {% call button("/random/favorite", "w-full h-9 text-base font-bold me-0 !justify-start") %}
+      <span>Favorite</span>
+      {% endcall %}
+      {% call button("/random/wins", "w-full h-9 text-base font-bold me-0 !justify-start") %}
+      <span>Wins</span>
+      {% endcall %}
+      {% call button("/random/lore", "w-full h-9 text-base font-bold me-0 !justify-start") %}
+      <span>Lore</span>
+      {% endcall %}
+    </div>
+  </div>
+  {% endcall %}
+  {% call fieldset("cat ~/education.md") %}
+  <div id="education-section" class="text-lg">
+    <p class="m-0">where i learned the things i know</p>
+    <div class="flex flex-col gap-4 mt-4">
+      <div class="experience-card border border-black/30 dark:border-white/25 p-3">
+        <div class="flex items-start gap-3">
+          <img src="/assets/edu/NTHU.png" alt="NTHU logo"
+            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            loading="lazy" />
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
+              <div>
+                <p class="font-semibold text-base m-0">National Tsing Hua University (NTHU)</p>
+                <p class="text-sm m-0">College of Semiconductor Research (CoSR), Design Division</p>
+              </div>
+              <p class="text-sm m-0">09/2025 - present</p>
+            </div>
+            <p class="text-xs opacity-60 mt-1 m-0">Hsinchu, Taiwan</p>
+          </div>
+        </div>
+      </div>
+      <div class="experience-card border border-black/30 dark:border-white/25 p-3">
+        <div class="flex items-start gap-3">
+          <img src="/assets/edu/NCU.png" alt="NCU logo"
+            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            loading="lazy" />
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
+              <div>
+                <p class="font-semibold text-base m-0">National Central University (NCU)</p>
+                <p class="text-sm m-0">Department of Electrical Engineering</p>
+              </div>
+              <p class="text-sm m-0">09/2021 - 06/2025</p>
+            </div>
+            <p class="text-xs opacity-60 mt-1 m-0">Taoyuan, Taiwan</p>
+          </div>
+        </div>
+      </div>
+      <div class="experience-card border border-black/30 dark:border-white/25 p-3">
+        <div class="flex items-start gap-3">
+          <img src="/assets/edu/DSHS.jpg" alt="DSHS logo"
+            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            loading="lazy" />
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
+              <div>
+                <p class="font-semibold text-base m-0">Taipei Private Dongshan High School (DSHS)</p>
+                <p class="text-sm m-0">High School</p>
+              </div>
+              <p class="text-sm m-0">09/2018 - 06/2021</p>
+            </div>
+            <p class="text-xs opacity-60 mt-1 m-0">Taipei, Taiwan</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endcall %}
+  {% call fieldset("cat ~/experience.md") %}
+  <div id="experience-section" class="text-lg">
+    <p class="m-0">the more professional-looking part of this</p>
+    <div class="flex flex-col gap-4 mt-4">
+      <div class="experience-card border border-black/30 dark:border-white/25 p-3">
+        <span class="favorite-star" aria-hidden="true"></span>
+        <div class="flex items-start gap-3">
+          <img src="/assets/experience/synopsys_logo.jpg" alt="synopsys logo"
+            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            loading="lazy" />
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
+              <div>
+                <p class="font-semibold text-base m-0">Synopsys</p>
+                <p class="text-sm m-0">AI-Assisted Analog EDA Engineering Internship</p>
+              </div>
+              <p class="text-sm m-0">07/2026 - 08/2026</p>
+            </div>
+            <p class="text-xs opacity-60 mt-1 m-0">Hsinchu, Taiwan</p>
+          </div>
+        </div>
+      </div>
+      <div class="experience-card border border-black/30 dark:border-white/25 p-3">
+        <span class="favorite-star" aria-hidden="true"></span>
+        <div class="flex items-start gap-3">
+          <img src="/assets/experience/ICCAD.png" alt="ICCAD logo"
+            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            loading="lazy" />
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
+              <div>
+                <p class="font-semibold text-base m-0">2024 ICCAD CAD Contest & Workshop on EDA</p>
+                <p class="text-sm m-0">Honorable Mention, Problem D</p>
+              </div>
+              <p class="text-sm m-0">06/2024 - 11/2024</p>
+            </div>
+            <p class="text-xs opacity-60 mt-1 m-0">Keelung, Taiwan</p>
+            <p class="text-sm mt-1 m-0">
+              Spent months building a chip-level global router and snagged an honorable mention. Wrapped up the whole experience at the EDA workshop.
+            </p>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <button type="button" class="proof-chip" data-open-gallery="iccad">
+                pictures!
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="experience-card border border-black/30 dark:border-white/25 p-3">
+        <div class="flex items-start gap-3">
+          <img src="/assets/experience/NTSEC.png" alt="NTSEC logo"
+            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            loading="lazy" />
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
+              <div>
+                <p class="font-semibold text-base m-0">NTSEC × KKSTEAM</p>
+                <p class="text-sm m-0">LEGO EV3 Summer Camp Teaching Assistant</p>
+              </div>
+              <p class="text-sm m-0">07/2024 - 08/2024</p>
+            </div>
+            <p class="text-xs opacity-60 mt-1 m-0">Taipei, Taiwan</p>
+            <p class="text-sm mt-1 m-0">
+              Guided students in building and programming LEGO EV3 robots, and facilitated STEM learning activities.
+            </p>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <button type="button" class="proof-chip" data-open-gallery="lego">
+                pictures!
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="experience-card border border-black/30 dark:border-white/25 p-3">
+        <div class="flex items-start gap-3">
+          <img src="/assets/experience/Taipei City Government logo.png" alt="Taipei City Government logo"
+            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            loading="lazy" />
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
+              <div>
+                <p class="font-semibold text-base m-0">
+                  Taipei City Government
+                </p>
+                <p class="text-sm m-0">Administrative Summer Intern, Taipei City Hospital</p>
+              </div>
+              <p class="text-sm m-0">07/2023 - 08/2023</p>
+            </div>
+            <p class="text-xs opacity-60 mt-1 m-0">Taipei, Taiwan</p>
+            <p class="text-sm mt-1 m-0">Handling paperwork and learning how a massive municipal hospital system operates from the inside.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="experience-card border border-black/30 dark:border-white/25 p-3">
+        <div class="flex items-start gap-3">
+          <img src="/assets/experience/c4m.jpg" alt="C4M logo"
+            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            loading="lazy" />
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
+              <div>
+                <p class="font-semibold text-base m-0">C4M Robotics Summer Camp @ NCU</p>
+                <p class="text-sm m-0">Participant</p>
+              </div>
+              <p class="text-sm m-0">07/2019</p>
+            </div>
+            <p class="text-xs opacity-60 mt-1 m-0">Taoyuan, Taiwan</p>
+            <p class="text-sm mt-1 m-0">
+              Learned to control robots using C language, programming autonomous robotic platforms to execute path navigation, motor control, and sensor feedback logic.
+            </p>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <button type="button" class="proof-chip" data-open-gallery="c4m">
+                pictures!
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="experience-card border border-black/30 dark:border-white/25 p-3">
+        <div class="flex items-start gap-3">
+          <img src="/assets/experience/video_icon.png" alt="video icon"
+            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            loading="lazy" />
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
+              <div>
+                <p class="font-semibold text-base m-0">English Commercial Contest @ DSHS</p>
+                <p class="text-sm m-0">Video Editor & Music Composer</p>
+              </div>
+              <p class="text-sm m-0">05/2019 - 09/2019</p>
+            </div>
+            <p class="text-xs opacity-60 mt-1 m-0">Taipei, Taiwan</p>
+            <p class="text-sm mt-1 m-0">
+              Took charge of video editing and music scoring for our team's Beauty and the Beast trailer, which successfully won the best commercial award.
+            </p>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <button type="button" class="proof-chip" data-open-gallery="advertising">
+                pictures!
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endcall %}
+  {% call fieldset("ls ~/projects.md") %}
+  <div id="projects-section" class="text-lg">
+    <p class="m-0">a few things i want people to actually click on</p>
+    <div class="flex flex-col gap-4 mt-4">
+      <article class="project-card border border-black/30 dark:border-white/25 p-2">
+        <span class="favorite-star" aria-hidden="true"></span>
+        <div class="project-row">
+          <img src="/assets/projects/datamsith.png" alt="DataSmith project thumbnail" class="project-thumb"
+            loading="lazy" />
+          <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
+            <div>
+              <p class="font-semibold text-base m-0">DataSmith</p>
+              <p class="text-sm mt-1 m-0">
+                Agent-powered data cleaning pipeline for turning raw datasets
+                into ML-ready data with quality scoring and dashboards.
+              </p>
+            </div>
+            <div class="project-links">
+              <a href="https://devpost.com/software/67-industries" target="_blank" rel="noopener noreferrer"
+                class="project-link">
+                Devpost
+              </a>
+            </div>
+          </div>
+      </article>
+
+      <article class="project-card border border-black/30 dark:border-white/25 p-2">
+        <div class="project-row">
+          <img src="/assets/projects/fluentform.png" alt="FluentForm project thumbnail" class="project-thumb"
+            loading="lazy" />
+          <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
+            <div>
+              <p class="font-semibold text-base m-0">FluentForm</p>
+              <p class="text-sm mt-1 m-0">
+                AI pronunciation coach that analyzes phonemes, scores speech,
+                and generates personalized practice using Azure + OpenAI.
+              </p>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/blopezleon/goat-idk" target="_blank" rel="noopener noreferrer"
+                class="project-link">
+                GitHub
+              </a>
+              <a href="https://devpost.com/software/fluentform" target="_blank" rel="noopener noreferrer"
+                class="project-link">
+                Devpost
+              </a>
+            </div>
+          </div>
+      </article>
+
+      <article class="project-card border border-black/30 dark:border-white/25 p-2">
+        <span class="favorite-star" aria-hidden="true"></span>
+        <div class="project-row">
+          <img src="/assets/projects/mcmc.png" alt="MCMC CUDA Model project thumbnail" class="project-thumb"
+            loading="lazy" />
+          <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
+            <div>
+              <p class="font-semibold text-base m-0">MCMC CUDA Model</p>
+              <p class="text-sm mt-1 m-0">
+                Monte Carlo + Markov-chain options trading system with
+                backtesting, probabilistic forecasts, and CUDA acceleration.
+              </p>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/William08290829/mcmc-cuda-model" target="_blank" rel="noopener noreferrer"
+                class="project-link">
+                GitHub
+              </a>
+            </div>
+          </div>
+      </article>
+
+      <article class="project-card border border-black/30 dark:border-white/25 p-2">
+        <div class="project-row">
+          <img src="/assets/github.svg" alt="Personal Portfolio Website project thumbnail"
+            class="project-thumb object-contain bg-white p-2" loading="lazy" />
+          <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
+            <div>
+              <p class="font-semibold text-base m-0">Personal Portfolio Website</p>
+              <p class="text-sm mt-1 m-0">
+                My personal website built with a custom static site generator in Python (Jinja2, Mistune) and Tailwind
+                CSS.
+              </p>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/William08290829/williamchen.me" target="_blank" rel="noopener noreferrer"
+                class="project-link">
+                GitHub
+              </a>
+            </div>
+          </div>
+      </article>
+    </div>
+  </div>
+  {% endcall %}
+  {% call fieldset("cat ~/links.md") %}
+  <article>
+    links!
+    <ul>
+      <li><a href="mailto:a0935109965@gmail.com">Email</a></li>
+      <li><a href="https://github.com/William08290829" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      <li><a href="https://www.linkedin.com/in/%E4%BF%8A%E7%91%8B-%E9%99%B3-134182290/" target="_blank"
+          rel="noopener noreferrer">LinkedIn</a></li>
+      <li><a href="https://www.instagram.com/will_i_am__chen/?hl=zh-tw" target="_blank"
+          rel="noopener noreferrer">Instagram</a></li>
+    </ul>
+  </article>
+  {% endcall %}
+</div>
+
+
+<div class="experience-gallery" id="experience-gallery-iccad" aria-hidden="true">
+  <div class="experience-gallery-panel" role="dialog" aria-modal="true"
+    aria-labelledby="experience-gallery-iccad-title">
+    <div class="experience-gallery-head">
+      <div>
+        <h3 id="experience-gallery-iccad-title">ICCAD Pictures</h3>
+        <p>snapshots from the contest and eda workshop</p>
+      </div>
+      <button type="button" class="experience-gallery-close" data-close-gallery="iccad">
+        x
+      </button>
+    </div>
+    <div class="experience-gallery-grid">
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_iccad/award photo.jpg" alt="Award ceremony photo" loading="lazy" />
+        <p>receiving the honorable mention award at the workshop</p>
+      </figure>
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_iccad/CAD Contest award.jpg" alt="CAD Contest award certificate" loading="lazy" />
+        <p>CAD Contest honorable mention certificate</p>
+      </figure>
+    </div>
+  </div>
+</div>
+
+<div class="experience-gallery" id="experience-gallery-c4m" aria-hidden="true">
+  <div class="experience-gallery-panel" role="dialog" aria-modal="true"
+    aria-labelledby="experience-gallery-c4m-title">
+    <div class="experience-gallery-head">
+      <div>
+        <h3 id="experience-gallery-c4m-title">C4M pictures</h3>
+        <p>snapshots from the camp</p>
+      </div>
+      <button type="button" class="experience-gallery-close" data-close-gallery="c4m">
+        x
+      </button>
+    </div>
+    <div class="experience-gallery-grid">
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_c4m/機器人倒立.jpg" alt="handstand" loading="lazy" />
+        <p>our robot is doing a handstand</p>
+      </figure>
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_c4m/機器人營1.jpg" alt="drama" loading="lazy" />
+        <p>me and my classmate carrying the entire dramatic weight of the camp</p>
+      </figure>
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_c4m/機器人營3.jpg" alt="team photo!!" loading="lazy" />
+        <p>team photo!!</p>
+      </figure>
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_c4m/機器人營4.jpg" alt="deep in concentration" loading="lazy" />
+        <p>deep in concentration (or just trying to look professional for the camera)</p>
+      </figure>
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_c4m/機器人營2.jpg" alt="the whole crew" loading="lazy" />
+        <p>the whole C4M camp crew!!</p>
+      </figure>
+    </div>
+  </div>
+</div>
+
+
+<div class="experience-gallery" id="experience-gallery-lego" aria-hidden="true">
+  <div class="experience-gallery-panel" role="dialog" aria-modal="true"
+    aria-labelledby="experience-gallery-lego-title">
+    <div class="experience-gallery-head">
+      <div>
+        <h3 id="experience-gallery-lego-title">LEGO EV3 Summer Camp Pictures</h3>
+        <p>snapshots from the camp</p>
+      </div>
+      <button type="button" class="experience-gallery-close" data-close-gallery="lego">
+        x
+      </button>
+    </div>
+    <div class="experience-gallery-grid">
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_ev3/group_photo1.jpg" alt="group photo!!" loading="lazy" />
+        <p>group photo!!</p>
+      </figure>
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_ev3/lego_mindstorm.jpg" alt="lego mindstorm" loading="lazy" />
+        <p>lego mindstorm</p>
+      </figure>
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_ev3/crane.jpg" alt="crane" loading="lazy" />
+        <p>a surprisingly capable motorized crane</p>
+      </figure>
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_ev3/teaching1.jpg" alt="teaching" loading="lazy" />
+        <p>teaching</p>
+      </figure>
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_ev3/teaching2.jpg" alt="teaching" loading="lazy" />
+        <p>and teaching~</p>
+      </figure>
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_ev3/forklift.jpg" alt="forklift" loading="lazy" />
+        <p>getting the kids forklift certified, one brick at a time</p>
+      </figure>
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_ev3/rover.jpg" alt="rover" loading="lazy" />
+        <p>obstacle-avoiding rover, but made of ev3 bricks</p>
+      </figure>
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_ev3/group_photo2.jpg" alt="group photo!!" loading="lazy" />
+        <p>another group photo!!</p>
+      </figure>
+    </div>
+  </div>
+</div>
+
+<div class="experience-gallery" id="experience-gallery-advertising" aria-hidden="true">
+  <div class="experience-gallery-panel" role="dialog" aria-modal="true"
+    aria-labelledby="experience-gallery-advertising-title">
+    <div class="experience-gallery-head">
+      <div>
+        <h3 id="experience-gallery-advertising-title">English Commercial Contest Pictures</h3>
+        <p>snapshots from the shooting</p>
+      </div>
+      <button type="button" class="experience-gallery-close" data-close-gallery="advertising">
+        x
+      </button>
+    </div>
+    <div class="experience-gallery-grid">
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_ad/拍攝過程1.jpg" alt="filming" loading="lazy" />
+        <p>trying to create cinematic magic on a high school student budget.</p>
+      </figure>
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_ad/stills1.jpg" alt="filming" loading="lazy" />
+        <p>some stills from the final cut.</p>
+      </figure>
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_ad/stills2.jpg" alt="filming" loading="lazy" />
+        <p>actually looks like a real hollywood movie if you squint hard enough.</p>
+      </figure>
+      <figure class="experience-gallery-item">
+        <img src="/assets/experience/pics_ad/廣告吃飯.jpg" alt="dinner" loading="lazy" />
+        <p>filming is a wrap. time to eat before the editing nightmare actually begins.</p>
+      </figure>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (() => {
+    const openButtons = document.querySelectorAll("[data-open-gallery]");
+    const closeButtons = document.querySelectorAll("[data-close-gallery]");
+
+    function getGallery(name) {
+      return document.getElementById(`experience-gallery-${name}`);
+    }
+
+    function setGalleryOpen(name, isOpen) {
+      const gallery = getGallery(name);
+      if (!gallery) {
+        return;
+      }
+
+      gallery.classList.toggle("is-open", isOpen);
+      gallery.setAttribute("aria-hidden", isOpen ? "false" : "true");
+      document.body.style.overflow = isOpen ? "hidden" : "";
+    }
+
+    openButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setGalleryOpen(button.dataset.openGallery, true);
+      });
+    });
+
+    closeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setGalleryOpen(button.dataset.closeGallery, false);
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        document.querySelectorAll(".experience-gallery.is-open").forEach((gallery) => {
+          gallery.classList.remove("is-open");
+          gallery.setAttribute("aria-hidden", "true");
+        });
+        document.body.style.overflow = "";
+      }
+    });
+
+    document.querySelectorAll(".experience-gallery").forEach((gallery) => {
+      gallery.addEventListener("click", (event) => {
+        if (event.target === gallery) {
+          gallery.classList.remove("is-open");
+          gallery.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+        }
+      });
+    });
+
+  })();
+</script>
+{% endblock %}

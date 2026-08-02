@@ -1,0 +1,21 @@
+{
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.16",
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.9",
+    "postcss": "^8.5.3",
+    "prettier": "^3.5.3",
+    "prettier-plugin-jinja-template": "^1.5.0",
+    "tailwindcss": "^3.4.17"
+  },
+  "scripts": {
+    "watch:tailwind": "tailwindcss -i ./src/index.css -o ./dist/index.css --watch --poll",
+    "watch:html": "nodemon -L --watch src -e '*' --exec '.venv/bin/python src/build.py --output dist'",
+    "flask-dev": ".venv/bin/python -m flask --app src/dev-server.py --debug run --port 8000",
+    "dev": "concurrently \"pnpm watch:html\" \"pnpm watch:tailwind\" \"pnpm flask-dev\"",
+    "build": "./build.sh",
+    "images": "uv run python scripts/optimize_source_images.py",
+    "preview": "npx serve dist/"
+  }
+}
