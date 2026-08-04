@@ -324,6 +324,11 @@
     "source_bytes": 2856397,
     "source_sha256": "fe9adda3af81924f5faf04213192c1a90dd04d3323692362e0d6cf7ba358707c"
   },
+  "projects/OutFit.png": {
+    "output_bytes": 50181,
+    "source_bytes": 53095,
+    "source_sha256": "4b9cdc373604a27173b0c32b291b61c30bfeb9f38e156806b0fed831c16e3357"
+  },
   "projects/datamsith.png": {
     "output_bytes": 559648,
     "source_bytes": 654293,
@@ -339,10 +344,20 @@
     "source_bytes": 80985,
     "source_sha256": "52baf4450b83ff2a1dd135bd2083622972b39d7fec06f7264cc3ce51a348d928"
   },
+  "projects/mspice.png": {
+    "output_bytes": 58780,
+    "source_bytes": 58780,
+    "source_sha256": "fe47af1311ee94b9d143d32621df58a987057a0120e7b2211d576af1f6f7b8d7"
+  },
   "projects/rojo.png": {
     "output_bytes": 13407,
     "source_bytes": 14083,
     "source_sha256": "e998f581557a397118702992669e546c076602e9f4f0be3deb330f2bb06b5419"
+  },
+  "projects/wei-studio.png": {
+    "output_bytes": 94853,
+    "source_bytes": 99549,
+    "source_sha256": "79620a76aeeb9152b4db83fb93baca428fa2395db3a657988068b232f2fa2ad2"
   },
   "toolbox/rojo.png": {
     "output_bytes": 975,

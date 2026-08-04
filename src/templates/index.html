@@ -261,7 +261,7 @@
 
   .project-row {
     display: flex;
-    gap: 0.65rem;
+    gap: 0.9rem;
     align-items: flex-start;
   }
 
@@ -269,6 +269,7 @@
     width: 96px;
     height: 56px;
     flex: 0 0 96px;
+    margin: 0.5rem 0;
     border: 1px solid rgba(0, 0, 0, 0.3);
     object-fit: cover;
     align-self: flex-start;
@@ -313,7 +314,7 @@
     }
 
     .project-row {
-      gap: 0.55rem;
+      gap: 0.75rem;
     }
 
     .project-thumb {
@@ -372,7 +373,7 @@
   {% call fieldset("cat ~/random.md") %}
   <div class="flex flex-col gap-3 text-lg">
     <div class="flex flex-col gap-1">
-      <p class="font-serif text-xl m-0">A collection of things that make me, me. Featuring the formal CV, travel snaps, current hyperfixations, a wall of wins, and some personal lore.</p>
+      <p class="font-serif text-xl m-0">A collection of things that make me, me. Featuring the formal CV, travel snaps, current hyperfixations, a wall of wins, and some personal lore</p>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 pt-1">
       {% call button("/random/cv", "w-full h-9 text-base font-bold me-0 !justify-start") %}
@@ -400,12 +401,12 @@
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <div class="flex items-start gap-3">
           <img src="/assets/edu/NTHU.png" alt="NTHU logo"
-            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            class="w-12 h-12 shrink-0 object-contain my-1 border border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
             <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
               <div>
-                <p class="font-semibold text-base m-0">National Tsing Hua University (NTHU)</p>
+                <p class="font-serif font-semibold text-xl m-0">National Tsing Hua University (NTHU)</p>
                 <p class="text-sm m-0">College of Semiconductor Research (CoSR), Design Division</p>
               </div>
               <p class="text-sm m-0">09/2025 - present</p>
@@ -417,12 +418,12 @@
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <div class="flex items-start gap-3">
           <img src="/assets/edu/NCU.png" alt="NCU logo"
-            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            class="w-12 h-12 shrink-0 object-contain my-1 border border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
             <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
               <div>
-                <p class="font-semibold text-base m-0">National Central University (NCU)</p>
+                <p class="font-serif font-semibold text-xl m-0">National Central University (NCU)</p>
                 <p class="text-sm m-0">Department of Electrical Engineering</p>
               </div>
               <p class="text-sm m-0">09/2021 - 06/2025</p>
@@ -434,12 +435,12 @@
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <div class="flex items-start gap-3">
           <img src="/assets/edu/DSHS.jpg" alt="DSHS logo"
-            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            class="w-12 h-12 shrink-0 object-contain my-1 border border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
             <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
               <div>
-                <p class="font-semibold text-base m-0">Taipei Private Dongshan High School (DSHS)</p>
+                <p class="font-serif font-semibold text-xl m-0">Taipei Private Dongshan High School (DSHS)</p>
                 <p class="text-sm m-0">High School</p>
               </div>
               <p class="text-sm m-0">09/2018 - 06/2021</p>
@@ -459,12 +460,12 @@
         <span class="favorite-star" aria-hidden="true"></span>
         <div class="flex items-start gap-3">
           <img src="/assets/experience/synopsys_logo.jpg" alt="synopsys logo"
-            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            class="w-12 h-12 shrink-0 object-contain my-1 border-2 border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
             <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
               <div>
-                <p class="font-semibold text-base m-0">Synopsys</p>
+                <p class="font-serif font-semibold text-xl m-0">Synopsys</p>
                 <p class="text-sm m-0">AI-Assisted Analog EDA Engineering Internship</p>
               </div>
               <p class="text-sm m-0">07/2026 - 08/2026</p>
@@ -477,18 +478,18 @@
         <span class="favorite-star" aria-hidden="true"></span>
         <div class="flex items-start gap-3">
           <img src="/assets/experience/ICCAD.png" alt="ICCAD logo"
-            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            class="w-12 h-12 shrink-0 object-contain my-1 border-2 border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
             <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
               <div>
-                <p class="font-semibold text-base m-0">2024 ICCAD CAD Contest & Workshop on EDA</p>
+                <p class="font-serif font-semibold text-xl m-0">2024 ICCAD CAD Contest & Workshop on EDA</p>
                 <p class="text-sm m-0">Honorable Mention, Problem D</p>
               </div>
               <p class="text-sm m-0">06/2024 - 11/2024</p>
             </div>
             <p class="text-xs opacity-60 mt-1 m-0">Keelung, Taiwan</p>
-            <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
+            <p class="font-sans text-sm mt-1 m-0">
               Spent months building a chip-level global router and snagged an honorable mention. Wrapped up the whole experience at the EDA workshop.
             </p>
             <div class="flex flex-wrap gap-2 mt-3">
@@ -503,18 +504,18 @@
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <div class="flex items-start gap-3">
           <img src="/assets/experience/NTSEC.png" alt="NTSEC logo"
-            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            class="w-12 h-12 shrink-0 object-contain my-1 border-2 border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
             <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
               <div>
-                <p class="font-semibold text-base m-0">NTSEC × KKSTEAM</p>
+                <p class="font-serif font-semibold text-xl m-0">NTSEC × KKSTEAM</p>
                 <p class="text-sm m-0">LEGO EV3 Summer Camp Teaching Assistant</p>
               </div>
               <p class="text-sm m-0">07/2024 - 08/2024</p>
             </div>
             <p class="text-xs opacity-60 mt-1 m-0">Taipei, Taiwan</p>
-            <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
+            <p class="font-sans text-sm mt-1 m-0">
               Guided students in building and programming LEGO EV3 robots, and facilitated STEM learning activities.
             </p>
             <div class="flex flex-wrap gap-2 mt-3">
@@ -529,12 +530,12 @@
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <div class="flex items-start gap-3">
           <img src="/assets/experience/Taipei City Government logo.png" alt="Taipei City Government logo"
-            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            class="w-12 h-12 shrink-0 object-contain my-1 border-2 border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
             <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
               <div>
-                <p class="font-semibold text-base m-0">
+                <p class="font-serif font-semibold text-xl m-0">
                   Taipei City Government
                 </p>
                 <p class="text-sm m-0">Administrative Summer Intern, Taipei City Hospital</p>
@@ -542,7 +543,7 @@
               <p class="text-sm m-0">07/2023 - 08/2023</p>
             </div>
             <p class="text-xs opacity-60 mt-1 m-0">Taipei, Taiwan</p>
-            <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">Handling paperwork and learning how a massive municipal hospital system operates from the inside.</p>
+            <p class="font-sans text-sm mt-1 m-0">Handling paperwork and learning how a massive municipal hospital system operates from the inside.</p>
           </div>
         </div>
       </div>
@@ -550,18 +551,18 @@
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <div class="flex items-start gap-3">
           <img src="/assets/experience/c4m.jpg" alt="C4M logo"
-            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            class="w-12 h-12 shrink-0 object-contain my-1 border-2 border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
             <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
               <div>
-                <p class="font-semibold text-base m-0">C4M Robotics Summer Camp @ NCU</p>
+                <p class="font-serif font-semibold text-xl m-0">C4M Robotics Summer Camp @ NCU</p>
                 <p class="text-sm m-0">Participant</p>
               </div>
               <p class="text-sm m-0">07/2019</p>
             </div>
             <p class="text-xs opacity-60 mt-1 m-0">Taoyuan, Taiwan</p>
-            <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
+            <p class="font-sans text-sm mt-1 m-0">
               Learned to control robots using C language, programming autonomous robotic platforms to execute path navigation, motor control, and sensor feedback logic.
             </p>
             <div class="flex flex-wrap gap-2 mt-3">
@@ -576,18 +577,18 @@
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <div class="flex items-start gap-3">
           <img src="/assets/experience/video_icon.png" alt="video icon"
-            class="w-12 h-12 shrink-0 object-contain border border-black/30 dark:border-white/25 p-1 bg-white"
+            class="w-12 h-12 shrink-0 object-contain my-1 border-2 border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
             <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
               <div>
-                <p class="font-semibold text-base m-0">English Commercial Contest @ DSHS</p>
+                <p class="font-serif font-semibold text-xl m-0">English Commercial Contest @ DSHS</p>
                 <p class="text-sm m-0">Video Editor & Music Composer</p>
               </div>
               <p class="text-sm m-0">05/2019 - 09/2019</p>
             </div>
             <p class="text-xs opacity-60 mt-1 m-0">Taipei, Taiwan</p>
-            <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
+            <p class="font-sans text-sm mt-1 m-0">
               Took charge of video editing and music scoring for our team's Beauty and the Beast trailer, which successfully won the best commercial award.
             </p>
             <div class="flex flex-wrap gap-2 mt-3">
@@ -605,68 +606,23 @@
   <div id="projects-section" class="text-lg">
     <p class="font-serif text-xl m-0">A few things I want people to actually click on</p>
     <div class="flex flex-col gap-4 mt-4">
-      <article class="project-card border border-black/30 dark:border-white/25 p-2">
-        <span class="favorite-star" aria-hidden="true"></span>
+      <article class="project-card border border-black/30 dark:border-white/25 p-3">
         <div class="project-row">
-          <img src="/assets/projects/datamsith.png" alt="DataSmith project thumbnail" class="project-thumb"
+          <img src="/assets/projects/mspice.png" alt="Mspice circuit simulator website" class="project-thumb"
             loading="lazy" />
           <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
             <div>
-              <p class="font-semibold text-base m-0">DataSmith</p>
-              <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
-                Agent-powered data cleaning pipeline for turning raw datasets
-                into ML-ready data with quality scoring and dashboards.
+              <p class="font-serif font-semibold text-xl m-0">Mspice</p>
+              <p class="font-sans text-sm mt-1 m-0">
+                A Python-based SPICE circuit simulator built with three teammates. It parses netlists for AC, DC, transient, and subcircuit analyses using Modified Nodal Analysis, Newton's Method, Backward Euler, and BDF2. It has simulated circuits up to 234 MOSFETs within roughly 1–2% of Ngspice.
               </p>
             </div>
             <div class="project-links">
-              <a href="https://devpost.com/software/67-industries" target="_blank" rel="noopener noreferrer"
+              <a href="https://mspice.pythonanywhere.com/" target="_blank" rel="noopener noreferrer"
                 class="project-link">
-                Devpost
+                Website
               </a>
-            </div>
-          </div>
-      </article>
-
-      <article class="project-card border border-black/30 dark:border-white/25 p-2">
-        <div class="project-row">
-          <img src="/assets/projects/fluentform.png" alt="FluentForm project thumbnail" class="project-thumb"
-            loading="lazy" />
-          <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
-            <div>
-              <p class="font-semibold text-base m-0">FluentForm</p>
-              <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
-                AI pronunciation coach that analyzes phonemes, scores speech,
-                and generates personalized practice using Azure + OpenAI.
-              </p>
-            </div>
-            <div class="project-links">
-              <a href="https://github.com/blopezleon/goat-idk" target="_blank" rel="noopener noreferrer"
-                class="project-link">
-                GitHub
-              </a>
-              <a href="https://devpost.com/software/fluentform" target="_blank" rel="noopener noreferrer"
-                class="project-link">
-                Devpost
-              </a>
-            </div>
-          </div>
-      </article>
-
-      <article class="project-card border border-black/30 dark:border-white/25 p-2">
-        <span class="favorite-star" aria-hidden="true"></span>
-        <div class="project-row">
-          <img src="/assets/projects/mcmc.png" alt="MCMC CUDA Model project thumbnail" class="project-thumb"
-            loading="lazy" />
-          <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
-            <div>
-              <p class="font-semibold text-base m-0">MCMC CUDA Model</p>
-              <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
-                Monte Carlo + Markov-chain options trading system with
-                backtesting, probabilistic forecasts, and CUDA acceleration.
-              </p>
-            </div>
-            <div class="project-links">
-              <a href="https://github.com/William08290829/mcmc-cuda-model" target="_blank" rel="noopener noreferrer"
+              <a href="https://github.com/William08290829/Mspice" target="_blank" rel="noopener noreferrer"
                 class="project-link">
                 GitHub
               </a>
@@ -674,20 +630,47 @@
           </div>
       </article>
 
-      <article class="project-card border border-black/30 dark:border-white/25 p-2">
+      <article class="project-card border border-black/30 dark:border-white/25 p-3">
         <div class="project-row">
-          <img src="/assets/github.svg" alt="Personal Portfolio Website project thumbnail"
-            class="project-thumb object-contain bg-white p-2" loading="lazy" />
+          <img src="/assets/projects/wei-studio.png" alt="WEI Studio website" class="project-thumb"
+            loading="lazy" />
           <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
             <div>
-              <p class="font-semibold text-base m-0">Personal Portfolio Website</p>
-              <p class="font-serif text-[15px] font-medium leading-5 mt-1 m-0">
-                My personal website built with a custom static site generator in Python (Jinja2, Mistune) and Tailwind
-                CSS.
+              <p class="font-serif font-semibold text-xl m-0">WEI Studio</p>
+              <p class="font-sans text-sm mt-1 m-0">
+                My personal design portfolio, where I share graphic work shaped largely by my love of comics and film.
               </p>
             </div>
             <div class="project-links">
-              <a href="https://github.com/William08290829/williamchen.me" target="_blank" rel="noopener noreferrer"
+              <a href="https://william08290829.github.io/WeiStudio/" target="_blank" rel="noopener noreferrer"
+                class="project-link">
+                Website
+              </a>
+              <a href="https://github.com/William08290829/WeiStudio" target="_blank" rel="noopener noreferrer"
+                class="project-link">
+                GitHub
+              </a>
+            </div>
+          </div>
+      </article>
+
+      <article class="project-card border border-black/30 dark:border-white/25 p-3">
+        <div class="project-row">
+          <img src="/assets/projects/OutFit.png" alt="OutFit weather and clothing suggestion website" class="project-thumb"
+            loading="lazy" />
+          <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
+            <div>
+              <p class="font-serif font-semibold text-xl m-0">OutFit</p>
+              <p class="font-sans text-sm mt-1 m-0">
+                A weather-aware outfit helper: enter a city or county to see local conditions and temperature, then get a practical clothing suggestion.
+              </p>
+            </div>
+            <div class="project-links">
+              <a href="https://outfit-h4mx.onrender.com/" target="_blank" rel="noopener noreferrer"
+                class="project-link">
+                Website
+              </a>
+              <a href="https://github.com/William08290829/OutFit" target="_blank" rel="noopener noreferrer"
                 class="project-link">
                 GitHub
               </a>
