@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --selection-bg: #deb3a1;
+  --selection-bg: #5fa8ece3;
   --selection-text: #2a1604;
 }
 
