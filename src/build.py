@@ -3,8 +3,6 @@ import argparse
 from shutil import rmtree
 from urllib.parse import urljoin
 
-import mistune
-import frontmatter
 from bs4 import BeautifulSoup, element
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -71,26 +69,6 @@ def render_template(template_name, **context):
     return soup
 
 
-make_html: mistune.Markdown = mistune.create_markdown(
-    escape=False,
-    plugins=["strikethrough", "footnotes", "table", "speedup", "math"],
-)
-
-
-def get_post(folder, file):
-    obj = frontmatter.load(f"posts/{folder}/{file}")
-    html = make_html(obj.content)
-
-    obj.content = html
-    obj["slug"] = file.replace(".md", "")
-    obj["href"] = f"/{folder}/{obj['slug']}"
-
-    if "order" not in obj:
-        obj["order"] = 0
-
-    return obj
-
-
 def og_tags(data: dict):
     tags = []
     for key, value in data.items():
@@ -129,68 +107,6 @@ def twitter_tags(data: dict):
     return tags
 
 
-def post_seotags(folder, post):
-    items_common = {
-        "url": urljoin(url, f"/{folder}/{post['slug']}"),
-    }
-
-    if "title" in post:
-        items_common["title"] = f"{name} | {post['title']}"
-
-    if "summary" in post:
-        items_common["description"] = post["summary"]
-
-    if "coverImage" in post:
-        items_common["image"] = urljoin(url, post["coverImage"])
-
-    items_og = {
-        **items_common,
-        "type": "website",
-    }
-
-    items_twitter = {
-        **items_common,
-        "card": "summary_large_image",
-        "domain": domain,
-    }
-
-    return og_tags(items_og) + twitter_tags(items_twitter)
-
-
-def render_post(folder, post):
-    template = env.get_template(f"posts/{folder}/page.html")
-    rendered = template.render(post=post, title=f"{name} | {post['title']}", name=name)
-
-    soup = bs(rendered)
-    og = post_seotags(folder, post)
-
-    for item in og:
-        soup.head.append(bs(item))
-
-    return soup.encode_contents().decode("utf-8")
-
-
-def render_post_list(folder, posts):
-    template = env.get_template(f"posts/{folder}/list.html")
-    return template.render(posts=posts)
-
-
-post_folders = [f for f in os.listdir("posts") if os.path.isdir(f"posts/{f}")]
-lists = {}
-
-for post_folder in post_folders:
-    post_files = os.listdir(f"posts/{post_folder}")
-    posts = [get_post(post_folder, f) for f in post_files]
-    posts = sorted(posts, key=lambda x: x["order"])
-
-    for post in posts:
-        write_output(
-            render_post(post_folder, post), post_folder, f"{post['slug']}.html"
-        )
-
-    lists[post_folder] = render_post_list(post_folder, posts)
-
-
 def img_tag_rule(img_tag: element.Tag):
     if not img_tag.has_attr("decoding"):
         img_tag["decoding"] = "async"
@@ -218,7 +134,7 @@ og = og_tags(
 twitter = twitter_tags({**seo_common, "card": "summary"})
 seotags = og + twitter
 
-index_soup = render_template("index.html", lists=lists, name=name, title=title_name)
+index_soup = render_template("index.html", name=name, title=title_name)
 for item in seotags:
     index_soup.head.append(bs(item))
 
@@ -269,7 +185,7 @@ custom_pages = [
             **seo_common,
             "url": urljoin(url, "/random/lore"),
             "title": f"{title_name} | Lore",
-            "description": f"{title_name}'s story notes, side quests, and builder lore",
+            "description": f"The questions {title_name} gets asked, and the answers actually given",
             "image": urljoin(url, "/assets/me.jpg"),
         },
     },

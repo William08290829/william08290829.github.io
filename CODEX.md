@@ -1,6 +1,6 @@
 # Codex Notes - williamchen.me
 
-Static site generator for personal portfolio using Python (Jinja2, Mistune) and Tailwind CSS.
+Static site generator for personal portfolio using Python (Jinja2) and Tailwind CSS.
 
 ## Working Rules
 

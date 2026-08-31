@@ -1,6 +1,6 @@
 # Portfolio Website - williamchen.me
 
-Static site generator for personal portfolio using Python (Jinja2, Mistune) and Tailwind CSS.
+Static site generator for personal portfolio using Python (Jinja2) and Tailwind CSS.
 
 ## Working Rules
 
@@ -43,13 +43,11 @@ The repo's shell build path is not the most reliable workflow on Windows.
   - `build.py` - Main static site generator
   - `templates/` - Jinja2 HTML templates
   - `index.css` - Tailwind CSS source
-- `posts/` - Markdown content files with frontmatter
 - `public/` - Static assets (copied to dist/)
 - `dist/` - Build output (gitignored)
 
 ## Tech Stack
 
 - **Templates**: Jinja2
-- **Markdown**: Mistune
 - **Styling**: Tailwind CSS with Typography plugin
 - **Dev server**: Flask

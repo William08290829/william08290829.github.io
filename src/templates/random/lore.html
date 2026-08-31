@@ -165,160 +165,149 @@
       line-height: 1.55;
     }
 
-    .guess-game {
-      margin-top: 0.75rem;
+    /* tiny global router, in the spirit of the contest problem */
+    .route-game {
+      margin-top: 0.9rem;
+      padding: 0.8rem;
+      border: 1px solid var(--site-border);
+      background: color-mix(in srgb, var(--site-panel) 86%, transparent);
     }
 
-    .guess-input-row {
+    .route-grid {
+      display: grid;
+      grid-template-columns: repeat(var(--route-cols, 9), 1fr);
+      gap: 2px;
+      max-width: 22rem;
+      margin: 0 auto;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    .route-cell {
+      aspect-ratio: 1 / 1;
       display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .guess-input-row input {
-      width: 160px;
-      padding: 0.4rem 0.6rem;
-      border: 1px solid var(--site-border);
-      background: var(--site-panel);
-      color: var(--site-text);
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.9rem;
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-4px); }
-      40%, 80% { transform: translateX(4px); }
-    }
-
-    .guess-result.shake {
-      animation: shake 0.3s ease;
-    }
-
-    .guess-input-row button {
-      padding: 0.4rem 0.75rem;
-      border: 1px solid var(--site-border);
-      background: var(--site-panel);
-      color: var(--site-text);
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: background 0.15s ease;
-    }
-
-    .guess-input-row button:hover {
+      align-items: center;
+      justify-content: center;
+      border: 1px solid color-mix(in srgb, var(--site-text) 18%, transparent);
       background: var(--site-panel-soft);
-    }
-
-    .guess-result {
       font-family: "IBM Plex Mono", monospace;
-      font-weight: 600;
-    }
-
-    .guess-result.correct {
-      color: #1ca34b;
-    }
-
-    .typing-game {
-      margin-top: 0.75rem;
-    }
-
-    .typing-display {
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 1.1rem;
-      line-height: 1.8;
-      padding: 1rem;
-      background: #2b2b2b;
-      color: #646669;
-      border: 1px solid var(--site-border);
-      letter-spacing: 0.02em;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--site-muted);
       user-select: none;
     }
 
-    .typing-display .correct {
-      color: #d1d0c5;
+    .route-cell.is-blocked {
+      cursor: not-allowed;
+      border-color: color-mix(in srgb, var(--site-text) 32%, transparent);
+      background:
+        repeating-linear-gradient(
+          45deg,
+          color-mix(in srgb, var(--site-text) 28%, transparent) 0 3px,
+          transparent 3px 6px
+        ),
+        color-mix(in srgb, var(--site-text) 10%, transparent);
     }
 
-    .typing-display .incorrect {
-      color: #ca4754;
-      text-decoration: underline;
+    /* touch has no cursor to lean on, so a blockage says no by flinching */
+    @keyframes route-reject {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-2px); }
+      75% { transform: translateX(2px); }
     }
 
-    .typing-display .current {
-      border-left: 2px solid transparent;
-      margin-left: -1px;
+    .route-cell.is-rejected {
+      border-color: #ca4754;
+      animation: route-reject 180ms ease;
     }
 
-    .typing-game.focused .typing-display .current {
-      border-left-color: #e2b714;
-      animation: blink 1s infinite;
+    @media (prefers-reduced-motion: reduce) {
+      .route-cell.is-rejected {
+        animation: none;
+      }
     }
 
-    @keyframes blink {
-      0%, 50% { border-color: #e2b714; }
-      51%, 100% { border-color: transparent; }
+    .route-cell.is-path {
+      background: #e2b714;
+      border-color: #b8940f;
     }
 
-    .typing-input {
-      width: 100%;
-      margin-top: 0.75rem;
-      padding: 0.6rem 0.8rem;
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 1rem;
-      border: 1px solid var(--site-border);
-      background: var(--site-panel);
+    .route-cell.is-head {
+      box-shadow: inset 0 0 0 2px var(--site-text);
+    }
+
+    /* pins keep their own look even while the net runs through them */
+    .route-cell.is-pin {
+      background: color-mix(in srgb, var(--site-panel) 45%, #9db7ff);
+      border-color: var(--site-border);
       color: var(--site-text);
     }
 
-    .typing-input:focus {
-      outline: 2px solid #e2b714;
-      outline-offset: -2px;
+    .route-game.is-solved .route-cell.is-pin {
+      background: #1ca34b;
+      border-color: #147a37;
+      color: #ffffff;
     }
 
-    .typing-stats {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+    .route-hint {
       margin-top: 0.6rem;
       font-family: "IBM Plex Mono", monospace;
-      font-size: 0.9rem;
+      font-size: 0.72rem;
+      color: var(--site-muted);
+      text-align: center;
     }
 
-    .typing-stats span {
+    .route-stats {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.9rem;
+      margin-top: 0.6rem;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.85rem;
       color: var(--site-muted);
     }
 
-    .typing-stats #typing-wpm {
+    .route-stats .route-len {
       color: #e2b714;
       font-weight: 600;
     }
 
-    .typing-stats button {
+    .route-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
       margin-left: auto;
+    }
+
+    .route-actions button {
       padding: 0.3rem 0.6rem;
       border: 1px solid var(--site-border);
       background: var(--site-panel);
       color: var(--site-text);
-      font-size: 1rem;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.8rem;
       cursor: pointer;
       transition: background 0.15s ease;
     }
 
-    .typing-stats button:hover {
+    .route-actions button:hover {
       background: var(--site-panel-soft);
     }
 
-    .typing-result {
+    .route-status {
+      min-height: 1.3em;
       font-family: "IBM Plex Mono", monospace;
+      font-size: 0.85rem;
       font-weight: 600;
     }
 
-    .typing-result.win {
+    .route-status.is-optimal {
       color: #1ca34b;
     }
 
-    .typing-result.lose {
-      color: #ca4754;
+    .route-status.is-loose {
+      color: #e2b714;
     }
   </style>
 {% endblock %}
@@ -329,7 +318,7 @@
       <div class="lore-shell">
         <section class="lore-hero">
           <h2>lore</h2>
-          <p>(my life's faqs)</p>
+          <p>(The questions I get asked, and the answers I actually give)</p>
         </section>
 
         <section class="lore-section">
@@ -338,7 +327,7 @@
             <details id="faq-about" class="lore-entry" open>
               <summary>
                 <div class="lore-meta">
-                  <span class="lore-title">so tell me about yourself</span>
+                  <span class="lore-title">So tell me about yourself</span>
                 </div>
                 <span class="lore-summary-right">
                   <span class="lore-toggle">+</span>
@@ -346,16 +335,19 @@
               </summary>
               <div class="lore-body">
                 <p>
-                  hey! i'm William. cs student, software developer, and i
-                  like building things that people actually use.
+                  Hi! I'm a master's student with a growing interest in EDA. 
+                  I enjoy breaking down complicated problems and turning
+                  them into practical solutions. Beyond making things work, I also
+                  care about making them clear, approachable, and enjoyable for
+                  people to use.
                 </p>
               </div>
             </details>
 
-            <details id="faq-why-cs" class="lore-entry">
+            <details id="faq-why-eda" class="lore-entry">
               <summary>
                 <div class="lore-meta">
-                  <span class="lore-title">why computer science?</span>
+                  <span class="lore-title">Why EDA?</span>
                 </div>
                 <span class="lore-summary-right">
                   <span class="lore-toggle">+</span>
@@ -363,45 +355,43 @@
               </summary>
               <div class="lore-body">
                 <p>
-                  honestly i never planned on it. my dad had me watching top gun
-                  since i was five and i wanted to be a fighter pilot for years.
-                  probably watched that movie 30+ times. then i learned you could
-                  die doing that so i pivoted to aerospace engineering - figured
-                  i'd test fighter jets in simulations instead.
+                  It started in my senior year, when my professor invited me to join
+                  the ICCAD CAD Contest. Our team received an Honorable Mention, and
+                  somewhere between the algorithms, optimization problems, and long
+                  debugging sessions, I realized this was something I genuinely
+                  wanted to keep doing.
                 </p>
                 <p>
-                  but i'd also been on computers since i was like eight. spent a
-                  lot of time in minecraft building redstone contraptions -
-                  hidden piston doors, following tutorials, making my own stuff.
-                  sort of like forking repos before i knew what that meant.
+                  Our problem was a chip-level global router. Here is a much smaller
+                  version of the same idea: connect the two pins, route around the
+                  blockages, and try not to waste wire.
                 </p>
-                <p>
-                  took my first cs class in high school and it clicked. not love
-                  at first sight, but i realized cs lets you build solutions in
-                  almost any discipline. that's still what i believe and it keeps
-                  proving itself. it's not really the coding i enjoy - it's being
-                  able to make things people can actually use and see the impact.
-                </p>
-                <figure class="mt-4">
-                  <img
-                    src="/assets/lore/why_cs.jpeg"
-                    alt="My first PC build from 2019"
-                    class="w-full max-w-sm border border-black/20 dark:border-white/20"
-                    loading="lazy"
-                  />
-                  <figcaption class="text-sm opacity-70 mt-2">
-                    built my first pc in 2019 for christmas<br />
-                    (P.S. the radeon card was a gift from my uncle's old bitcoin rig)<br />
-                    (P.P.S. my new rig is on a rtx 2080 super)
-                  </figcaption>
-                </figure>
+                <div class="route-game" id="route-game">
+                  <div
+                    class="route-grid"
+                    id="route-grid"
+                    role="img"
+                    aria-label="A small grid routing puzzle: connect pin A to pin B around the blockages"
+                  ></div>
+                  <p class="route-hint">click or drag to draw the net &middot; click back along it to rip up</p>
+                  <div class="route-stats">
+                    <span>wirelength: <span class="route-len" id="route-len">1 cell</span></span>
+                    <span>best: <span id="route-best">-</span></span>
+                    <div class="route-actions">
+                      <button type="button" id="route-auto">auto-route</button>
+                      <button type="button" id="route-reset">reset</button>
+                      <button type="button" id="route-next">new grid</button>
+                    </div>
+                  </div>
+                  <p class="route-status" id="route-status" aria-live="polite"></p>
+                </div>
               </div>
             </details>
 
             <details id="faq-weakness" class="lore-entry">
               <summary>
                 <div class="lore-meta">
-                  <span class="lore-title">what's your biggest weakness?</span>
+                  <span class="lore-title">What is your biggest weakness?</span>
                 </div>
                 <span class="lore-summary-right">
                   <span class="lore-toggle">+</span>
@@ -409,16 +399,17 @@
               </summary>
               <div class="lore-body">
                 <p>
-                  i say "this should only take a weekend" way too often. and
-                  then it doesn't.
+                  I can spend an unreasonable amount of time trying to make something
+                  just a little bit better. Sometimes "good enough" arrives before I
+                  am emotionally ready to accept it.
                 </p>
               </div>
             </details>
 
-            <details id="faq-five-years" class="lore-entry">
+            <details id="faq-what-i-value" class="lore-entry">
               <summary>
                 <div class="lore-meta">
-                  <span class="lore-title">where do you see yourself in 5 years?</span>
+                  <span class="lore-title">What do you care about when building something?</span>
                 </div>
                 <span class="lore-summary-right">
                   <span class="lore-toggle">+</span>
@@ -426,41 +417,28 @@
               </summary>
               <div class="lore-body">
                 <p>
-                  honestly? no idea. probably still building stuff and figuring
-                  it out as i go. that's worked so far.
+                  First, I care about impact: does it solve a real problem and produce
+                  a meaningful result? Then comes the user experience. A technically
+                  strong project is more valuable when people can understand and use
+                  it naturally.
                 </p>
-              </div>
-            </details>
-
-            <details id="faq-fun" class="lore-entry">
-              <summary>
-                <div class="lore-meta">
-                  <span class="lore-title">what do you do for fun?</span>
-                </div>
-                <span class="lore-summary-right">
-                  <span class="lore-toggle">+</span>
-                </span>
-              </summary>
-              <div class="lore-body">
                 <p>
-                  playing video games with friends, hiking, rock climbing,
-                  meeting new people. i like being around people.
+                  I also put a lot of thought into UI design &mdash; I want interfaces
+                  to feel clean, intuitive, and visually polished, without getting in
+                  the user's way.
                 </p>
               </div>
             </details>
-
           </div>
         </section>
-
-
 
         <section class="lore-section">
           <p class="lore-section-label">building</p>
           <div class="lore-list">
-            <details id="faq-building-now" class="lore-entry">
+            <details id="faq-current-stack" class="lore-entry">
               <summary>
                 <div class="lore-meta">
-                  <span class="lore-title">what are you working on right now?</span>
+                  <span class="lore-title">What are you working with these days?</span>
                 </div>
                 <span class="lore-summary-right">
                   <span class="lore-toggle">+</span>
@@ -468,9 +446,29 @@
               </summary>
               <div class="lore-body">
                 <p>
-                  hackathons i go to, roblox games, and a for-funsies trading
-                  algo using some statistical concepts i learned in sta 4821
-                  (stochastic processes).
+                  Mostly C++, TCL, and AI-agent co-work. I like treating agents
+                  as collaborators: they can help with research, implementation,
+                  debugging, and the occasional "why is this failing?" existential
+                  crisis.
+                </p>
+              </div>
+            </details>
+
+            <details id="faq-agent-cowork" class="lore-entry">
+              <summary>
+                <div class="lore-meta">
+                  <span class="lore-title">What does "agent co-work" mean to you?</span>
+                </div>
+                <span class="lore-summary-right">
+                  <span class="lore-toggle">+</span>
+                </span>
+              </summary>
+              <div class="lore-body">
+                <p>
+                  It is not about asking AI to do everything for me. It is about using
+                  it to explore ideas faster, remove repetitive work, find useful
+                  resources, and leave more time for the parts that still need human
+                  judgment.
                 </p>
               </div>
             </details>
@@ -478,7 +476,7 @@
             <details id="faq-learning" class="lore-entry">
               <summary>
                 <div class="lore-meta">
-                  <span class="lore-title">how do you learn new stuff?</span>
+                  <span class="lore-title">How do you learn new things?</span>
                 </div>
                 <span class="lore-summary-right">
                   <span class="lore-toggle">+</span>
@@ -486,16 +484,18 @@
               </summary>
               <div class="lore-body">
                 <p>
-                  i just start building and figure it out as i go. if i get
-                  stuck i'll read docs or ask someone but i learn best by doing.
+                  YouTube first. Some creators explain difficult topics so clearly
+                  that it feels like cheating. When YouTube does not have the answer,
+                  I ask AI to help me find better resources &mdash; or teach me
+                  directly if the question is small enough.
                 </p>
               </div>
             </details>
 
-            <details id="faq-stack" class="lore-entry">
+            <details id="faq-past-builds" class="lore-entry">
               <summary>
                 <div class="lore-meta">
-                  <span class="lore-title">what's your tech stack?</span>
+                  <span class="lore-title">What have you built before?</span>
                 </div>
                 <span class="lore-summary-right">
                   <span class="lore-toggle">+</span>
@@ -503,8 +503,49 @@
               </summary>
               <div class="lore-body">
                 <p>
-                  whatever my team is using :) i'm flexible. but my go-to stack
-                  when i'm solo is js/html, python, or lua for roblox games.
+                  I built mspice, a web-based SPICE simulation project for my
+                  undergraduate capstone, and WeiStudio, where I share some of my past
+                  Photoshop and Illustrator work.
+                </p>
+                <p>
+                  Both projects gave me a chance to put serious effort into web
+                  design, not just functionality, and create experiences that feel
+                  clear, intentional, and visually appealing.
+                </p>
+              </div>
+            </details>
+
+            <details id="faq-problems" class="lore-entry">
+              <summary>
+                <div class="lore-meta">
+                  <span class="lore-title">What kind of problems do you enjoy solving?</span>
+                </div>
+                <span class="lore-summary-right">
+                  <span class="lore-toggle">+</span>
+                </span>
+              </summary>
+              <div class="lore-body">
+                <p>
+                  Problems where there is both a technical challenge and a real
+                  payoff. If a solution can be faster, clearer, and make someone's
+                  life easier, that is usually a good sign I will enjoy working on it.
+                </p>
+              </div>
+            </details>
+
+            <details id="faq-success" class="lore-entry">
+              <summary>
+                <div class="lore-meta">
+                  <span class="lore-title">What is your definition of a successful project?</span>
+                </div>
+                <span class="lore-summary-right">
+                  <span class="lore-toggle">+</span>
+                </span>
+              </summary>
+              <div class="lore-body">
+                <p>
+                  Something that works, helps someone, and does not make its users ask
+                  "Why is it like this?" within the first five minutes.
                 </p>
               </div>
             </details>
@@ -514,43 +555,10 @@
         <section class="lore-section">
           <p class="lore-section-label">random</p>
           <div class="lore-list">
-            <details id="faq-typing-speed" class="lore-entry">
+            <details id="faq-outside-school" class="lore-entry">
               <summary>
                 <div class="lore-meta">
-                  <span class="lore-title">what's your typing speed?</span>
-                </div>
-                <span class="lore-summary-right">
-                  <span class="lore-toggle">+</span>
-                </span>
-              </summary>
-              <div class="lore-body">
-                <p>around 140 wpm. but can you beat me?</p>
-                <div class="typing-game" id="typing-game">
-                  <div class="typing-display" id="typing-display"></div>
-                  <input
-                    type="text"
-                    id="typing-input"
-                    class="typing-input"
-                    placeholder="click here and start typing..."
-                    autocomplete="off"
-                    autocapitalize="off"
-                    autocorrect="off"
-                    spellcheck="false"
-                  />
-                  <div class="typing-stats">
-                    <span id="typing-wpm">0 wpm</span>
-                    <span id="typing-time">0.0s</span>
-                    <button type="button" id="typing-refresh" title="new words">refresh</button>
-                  </div>
-                  <p id="typing-result" class="typing-result"></p>
-                </div>
-              </div>
-            </details>
-
-            <details id="faq-favorite-food" class="lore-entry">
-              <summary>
-                <div class="lore-meta">
-                  <span class="lore-title">what's your favorite food?</span>
+                  <span class="lore-title">What do you do outside of work and school?</span>
                 </div>
                 <span class="lore-summary-right">
                   <span class="lore-toggle">+</span>
@@ -558,15 +566,17 @@
               </summary>
               <div class="lore-body">
                 <p>
-                  publix subs (hot honey chicken tender sub, white bread, no cheese, light black pepper, light lemon garlic aioli, light hot honey, light mayonnaise, toasted)
+                  Skiing when I get the chance, playing Arena of Valor or Brawl Stars
+                  when I should probably be doing something else, and occasionally
+                  convincing myself that one more match is a reasonable decision.
                 </p>
               </div>
             </details>
 
-            <details id="faq-fruit" class="lore-entry">
+            <details id="faq-whats-next" class="lore-entry">
               <summary>
                 <div class="lore-meta">
-                  <span class="lore-title">if you had to pick 1 fruit to eat for the rest of your life what would you choose?</span>
+                  <span class="lore-title">What are you looking forward to next?</span>
                 </div>
                 <span class="lore-summary-right">
                   <span class="lore-toggle">+</span>
@@ -574,15 +584,17 @@
               </summary>
               <div class="lore-body">
                 <p>
-                  im between oranges and mangos. but i just have to choose oranges
+                  Going back to Japan to ski. Mountains, snow, good food, and
+                  temporarily having a valid excuse not to open my laptop sounds
+                  pretty perfect.
                 </p>
               </div>
             </details>
 
-            <details id="faq-terminal-command" class="lore-entry">
+            <details id="faq-debug-setup" class="lore-entry">
               <summary>
                 <div class="lore-meta">
-                  <span class="lore-title">what's your favorite terminal command?</span>
+                  <span class="lore-title">What is your ideal debugging environment?</span>
                 </div>
                 <span class="lore-summary-right">
                   <span class="lore-toggle">+</span>
@@ -590,7 +602,26 @@
               </summary>
               <div class="lore-body">
                 <p>
-                  claude --dangerously-skip-permissions
+                  A working internet connection, something to drink, and a bug that is
+                  not caused by one missing semicolon. I am flexible on the rest.
+                </p>
+              </div>
+            </details>
+
+            <details id="faq-cpp" class="lore-entry">
+              <summary>
+                <div class="lore-meta">
+                  <span class="lore-title">What is your relationship with C++?</span>
+                </div>
+                <span class="lore-summary-right">
+                  <span class="lore-toggle">+</span>
+                </span>
+              </summary>
+              <div class="lore-body">
+                <p>
+                  Complicated. It gives me performance, control, and algorithms to
+                  think about &mdash; then occasionally reminds me that memory has
+                  feelings too.
                 </p>
               </div>
             </details>
@@ -680,131 +711,239 @@
     })();
 
     (() => {
-      const sentences = [
-        "bro trust me the code works i tested it once already",
-        "claude make a super viral web app make no mistakes",
-        "openclaw claude max plan ralph loop superpowers dangerously skip permissions",
-        "hackathon starts in two hours and we have no idea yet",
-        "my web project just hit a million hits lets go dude",
-        "its not a bug its a feature trust the process here",
-        "top gun is the greatest movie ever made no debate needed",
-        "twenty nine failed side projects and counting but we move forward"
+      // "A" and "B" are the pins, "#" is a blockage. Add a layout to add a puzzle.
+      // the first four ramp up in wire length (14, 14, 17, 23). the last one is
+      // deliberately open instead of long: 96 ways to connect, 12 of them only two
+      // cells off the mark, and exactly one shortest net at 22.
+      const PUZZLES = [
+        ["A...#....", "###.#.###", "....#...#", ".##.###.#", ".#......#", ".#####..B"],
+        ["A........", ".#####.#.", ".#...#.#.", ".#.#.#.#.", "...#...#.", "####.###B"],
+        ["A.#.....B", "..#.###..", ".##.#.##.", ".#..#..#.", "....#...#", "#..###..#"],
+        ["B........", ".#######.", ".#.....#.", ".#.A##.#.", ".#...#.#.", ".#####..."],
+        ["A.#......", "#..#.....", "..##.###.", "#.#..##..", "#...#...#", "...#....B"],
       ];
 
-      const display = document.getElementById("typing-display");
-      const input = document.getElementById("typing-input");
-      const wpmEl = document.getElementById("typing-wpm");
-      const timeEl = document.getElementById("typing-time");
-      const refreshBtn = document.getElementById("typing-refresh");
-      const resultEl = document.getElementById("typing-result");
+      const game = document.getElementById("route-game");
+      const gridEl = document.getElementById("route-grid");
+      const lenEl = document.getElementById("route-len");
+      const bestEl = document.getElementById("route-best");
+      const statusEl = document.getElementById("route-status");
+      const autoBtn = document.getElementById("route-auto");
+      const resetBtn = document.getElementById("route-reset");
+      const nextBtn = document.getElementById("route-next");
 
-      if (!display || !input) return;
+      if (!game || !gridEl) return;
 
-      let currentSentence = "";
-      let startTime = null;
-      let timerInterval = null;
-      let finished = false;
+      let puzzle = 0;
+      let rows = 0;
+      let cols = 0;
+      let grid = [];
+      let cells = [];
+      let source = 0;
+      let target = 0;
+      let best = 0;
+      let path = [];
+      let solved = false;
+      let dragging = false;
+      let autoTimer = null;
 
-      function pickSentence() {
-        return sentences[Math.floor(Math.random() * sentences.length)];
+      const at = (r, c) => r * cols + c;
+      const rowOf = (i) => Math.floor(i / cols);
+      const colOf = (i) => i % cols;
+      const isNeighbor = (a, b) =>
+        Math.abs(rowOf(a) - rowOf(b)) + Math.abs(colOf(a) - colOf(b)) === 1;
+
+      // bfs from source, returns the full cell list of a shortest net (empty if unroutable)
+      function shortestNet() {
+        const prev = new Array(rows * cols).fill(-1);
+        const seen = new Array(rows * cols).fill(false);
+        const queue = [source];
+        seen[source] = true;
+
+        for (let head = 0; head < queue.length; head++) {
+          const cur = queue[head];
+          if (cur === target) break;
+
+          const r = rowOf(cur);
+          const c = colOf(cur);
+          [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]].forEach(([nr, nc]) => {
+            if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) return;
+            const next = at(nr, nc);
+            if (seen[next] || grid[next] === "#") return;
+            seen[next] = true;
+            prev[next] = cur;
+            queue.push(next);
+          });
+        }
+
+        if (!seen[target]) return [];
+
+        const net = [];
+        for (let cur = target; cur !== -1; cur = prev[cur]) net.push(cur);
+        return net.reverse();
+      }
+
+      function stopAuto() {
+        if (autoTimer) {
+          window.clearInterval(autoTimer);
+          autoTimer = null;
+        }
       }
 
       function render() {
-        const typed = input.value;
-        let html = "";
+        const onNet = new Set(path);
+        const head = path[path.length - 1];
 
-        for (let i = 0; i < currentSentence.length; i++) {
-          const char = currentSentence[i];
-          if (i < typed.length) {
-            if (typed[i] === char) {
-              html += `<span class="correct">${char}</span>`;
-            } else {
-              html += `<span class="incorrect">${char}</span>`;
-            }
-          } else if (i === typed.length) {
-            html += `<span class="current">${char}</span>`;
-          } else {
-            html += char;
-          }
+        cells.forEach((cell, i) => {
+          cell.classList.toggle("is-path", onNet.has(i));
+          cell.classList.toggle("is-head", !solved && i === head);
+        });
+
+        game.classList.toggle("is-solved", solved);
+        lenEl.textContent = `${path.length} ${path.length === 1 ? "cell" : "cells"}`;
+
+        if (!solved) {
+          statusEl.textContent = "";
+          statusEl.className = "route-status";
+          return;
         }
 
-        display.innerHTML = html;
+        if (path.length === best) {
+          statusEl.textContent = `Connected in ${best} cells. That is as short as it gets! 🎉`;
+          statusEl.className = "route-status is-optimal";
+        } else {
+          statusEl.textContent = `Connected in ${path.length} cells. The router did it in ${best}.`;
+          statusEl.className = "route-status is-loose";
+        }
       }
 
       function reset() {
-        currentSentence = pickSentence();
-        input.value = "";
-        input.disabled = false;
-        startTime = null;
-        finished = false;
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = null;
-        wpmEl.textContent = "0 wpm";
-        timeEl.textContent = "0.0s";
-        resultEl.textContent = "";
-        resultEl.className = "typing-result";
+        stopAuto();
+        path = [source];
+        solved = false;
         render();
-        input.focus();
       }
 
-      function updateTimer() {
-        if (!startTime || finished) return;
-        const elapsed = (Date.now() - startTime) / 1000;
-        timeEl.textContent = elapsed.toFixed(1) + "s";
+      function load(index) {
+        stopAuto();
+        puzzle = ((index % PUZZLES.length) + PUZZLES.length) % PUZZLES.length;
 
-        const typed = input.value;
-        const words = typed.trim().split(/\s+/).filter(w => w).length;
-        const wpm = elapsed > 0 ? Math.round((words / elapsed) * 60) : 0;
-        wpmEl.textContent = wpm + " wpm";
-      }
+        const layout = PUZZLES[puzzle];
+        rows = layout.length;
+        cols = layout[0].length;
+        grid = layout.join("").split("");
+        source = grid.indexOf("A");
+        target = grid.indexOf("B");
 
-      function checkFinish() {
-        if (input.value === currentSentence) {
-          finished = true;
-          if (timerInterval) clearInterval(timerInterval);
-          input.disabled = true;
-
-          const elapsed = (Date.now() - startTime) / 1000;
-          const words = currentSentence.trim().split(/\s+/).length;
-          const finalWpm = Math.round((words / elapsed) * 60);
-
-          wpmEl.textContent = finalWpm + " wpm";
-          timeEl.textContent = elapsed.toFixed(1) + "s";
-
-          if (finalWpm >= 140) {
-            resultEl.textContent = "you beat me! gg";
-            resultEl.className = "typing-result win";
-          } else {
-            resultEl.textContent = "try again!";
-            resultEl.className = "typing-result lose";
+        gridEl.style.setProperty("--route-cols", String(cols));
+        gridEl.innerHTML = "";
+        cells = grid.map((char, i) => {
+          const cell = document.createElement("div");
+          cell.className = "route-cell";
+          cell.dataset.index = String(i);
+          if (char === "#") cell.classList.add("is-blocked");
+          if (char === "A" || char === "B") {
+            cell.classList.add("is-pin");
+            cell.textContent = char;
           }
-        }
+          gridEl.appendChild(cell);
+          return cell;
+        });
+
+        best = shortestNet().length;
+        bestEl.textContent = `${best} cells`;
+        reset();
       }
 
-      const game = document.getElementById("typing-game");
+      // a timeout rather than animationend, so reduced-motion still clears the flash
+      function reject(index) {
+        const cell = cells[index];
+        if (!cell || cell.classList.contains("is-rejected")) return;
+        cell.classList.add("is-rejected");
+        window.setTimeout(() => cell.classList.remove("is-rejected"), 200);
+      }
 
-      input.addEventListener("focus", () => {
-        game.classList.add("focused");
-      });
+      function visit(index) {
+        if (solved || index === null) return;
 
-      input.addEventListener("blur", () => {
-        game.classList.remove("focused");
-      });
-
-      input.addEventListener("input", () => {
-        if (!startTime && input.value.length === 1) {
-          startTime = Date.now();
-          timerInterval = setInterval(updateTimer, 100);
+        if (grid[index] === "#") {
+          reject(index);
+          return;
         }
+
+        const head = path[path.length - 1];
+        if (index === head) return;
+
+        // clicking anywhere already on the net rips it back to that point
+        const existing = path.indexOf(index);
+        if (existing !== -1) {
+          path.length = existing + 1;
+          render();
+          return;
+        }
+
+        if (!isNeighbor(index, head)) return;
+
+        path.push(index);
+        if (index === target) solved = true;
         render();
-        checkFinish();
+      }
+
+      function cellUnder(event) {
+        const el = document.elementFromPoint(event.clientX, event.clientY);
+        const cell = el && el.closest ? el.closest(".route-cell") : null;
+        return cell ? Number(cell.dataset.index) : null;
+      }
+
+      gridEl.addEventListener("pointerdown", (event) => {
+        dragging = true;
+        try {
+          gridEl.setPointerCapture(event.pointerId);
+        } catch {
+          /* capture is a nicety, not a requirement */
+        }
+        stopAuto();
+        visit(cellUnder(event));
       });
 
-      refreshBtn.addEventListener("click", reset);
+      gridEl.addEventListener("pointermove", (event) => {
+        if (dragging) visit(cellUnder(event));
+      });
 
-      reset();
+      window.addEventListener("pointerup", () => {
+        dragging = false;
+      });
+
+      window.addEventListener("pointercancel", () => {
+        dragging = false;
+      });
+
+      // keeps the puzzle usable without a pointer, and shows what "optimal" looks like
+      autoBtn.addEventListener("click", () => {
+        stopAuto();
+        const net = shortestNet();
+        if (net.length < 2) return;
+
+        path = [source];
+        solved = false;
+        render();
+
+        let step = 1;
+        autoTimer = window.setInterval(() => {
+          path.push(net[step]);
+          step += 1;
+          if (step >= net.length) {
+            solved = true;
+            stopAuto();
+          }
+          render();
+        }, 70);
+      });
+
+      resetBtn.addEventListener("click", reset);
+      nextBtn.addEventListener("click", () => load(puzzle + 1));
+
+      load(0);
     })();
-
-
   </script>
 {% endblock %}

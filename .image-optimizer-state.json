@@ -309,11 +309,6 @@
     "source_bytes": 51432,
     "source_sha256": "64afa105bdbc62950559b2a3e2686d31ebf9d4282e45159bbe3f260023c209a7"
   },
-  "lore/why_cs.jpeg": {
-    "output_bytes": 221387,
-    "source_bytes": 343530,
-    "source_sha256": "9b00aa75dcd7f2de0d85db6d616e6e23d201696914977704685b189ce7174a18"
-  },
   "me.jpg": {
     "output_bytes": 95191,
     "source_bytes": 95191,

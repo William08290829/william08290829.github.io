@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv run *)",
+      "Bash(pnpm tailwindcss *)",
+      "Bash(python3 -)",
+      "Bash(grep -o \"🎉[^\\\\`]*✨\" dist/random/lore.html)"
+    ]
+  }
+}

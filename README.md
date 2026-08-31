@@ -45,9 +45,6 @@ williamchen.me
 ├── pyproject.toml                # Python dependencies
 ├── uv.lock
 ├── build.sh                      # prod build script, called by pnpm build
-├── posts                         # contains categories of posts
-│   └── projects
-│       └── *.md                  # project posts
 ├── public
 │   ├── assets/                   # static assets, images
 │   └── photography/              # photos (optional)
@@ -61,9 +58,5 @@ williamchen.me
 │       │   ├── button.html
 │       │   └── fieldset.html
 │       ├── index.html            # landing page
-│       ├── layout.html           # base layout
-│       └── posts                 # corresponds to posts directory
-│           └── projects
-│               ├── list.html     # renders list of posts in index.html
-│               └── page.html     # renders the actual post page
+│       └── layout.html           # base layout
 ```
