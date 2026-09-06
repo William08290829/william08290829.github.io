@@ -129,10 +129,70 @@
     "source_bytes": 173550,
     "source_sha256": "23caef71bd7c438e5fad98ed2d56fe964a7014facd03f29b51f87c89072f056a"
   },
+  "experience/pics_snps/Best-Pitch-Award.jpeg": {
+    "output_bytes": 338255,
+    "source_bytes": 437911,
+    "source_sha256": "accd787e8a4d9eef6a68c0fff0d873d9c372a6e019d37248cf614f1e351a0a83"
+  },
+  "experience/pics_snps/Day1.jpeg": {
+    "output_bytes": 400191,
+    "source_bytes": 468640,
+    "source_sha256": "6d0d551f93ba945ce18ec65b3721f292719639da409fa1d94ebe9c22e118e65b"
+  },
+  "experience/pics_snps/Day3.jpeg": {
+    "output_bytes": 550289,
+    "source_bytes": 693248,
+    "source_sha256": "4695780b97502cb8d6e9f8a26d8f3fc9df1cdbd62521970f0d2fbbf90440e587"
+  },
+  "experience/pics_snps/Final-Photo_with_mentor.jpg": {
+    "output_bytes": 285578,
+    "source_bytes": 5989351,
+    "source_sha256": "8d51203e6c4efc736746c657163aeb7fd0a58d2aad7f1fc20ee7ee27b547a787"
+  },
+  "experience/pics_snps/Last-lunch_with_team.jpeg": {
+    "output_bytes": 603437,
+    "source_bytes": 6733105,
+    "source_sha256": "b6002430d7943105c7959960368b1f2768bf2575931b8c98078a3f0e0253017e"
+  },
+  "experience/pics_snps/Pitch-Fest-Group-Photo.jpeg": {
+    "output_bytes": 413363,
+    "source_bytes": 538732,
+    "source_sha256": "7b645b6c6faba4992da8d6625075c33b48fb124ded66bff80e47bdaa2e41c862"
+  },
+  "experience/pics_snps/PurplePoster.jpg": {
+    "output_bytes": 432896,
+    "source_bytes": 3579683,
+    "source_sha256": "71b26f67b5706c29befcf43b6565071f7ffd90ca901bdc4a3be91283516ecc71"
+  },
+  "experience/pics_snps/certificate.jpg": {
+    "output_bytes": 230016,
+    "source_bytes": 2313060,
+    "source_sha256": "e332fbc4decf525d6b6d4a0382b1948640dbe32b02645b4ef619cbb1fe781dee"
+  },
+  "experience/pics_vlsicad/breakfast.jpg": {
+    "output_bytes": 400384,
+    "source_bytes": 3357939,
+    "source_sha256": "d92ace1305d25b8a3c8d6e541ec5107753f1d16e266b58b6c18366c25e7da916"
+  },
+  "experience/pics_vlsicad/dinner.jpg": {
+    "output_bytes": 472270,
+    "source_bytes": 3552056,
+    "source_sha256": "18e723811ef30d9b7d1b7983f75810cd1911da027516d59ce4444b7714d60b76"
+  },
+  "experience/pics_vlsicad/vlsicad_poster.jpg": {
+    "output_bytes": 390323,
+    "source_bytes": 3317706,
+    "source_sha256": "763a9de99175dd6aafbf2e3a6b301f60208d0bb893eaf13843896903b0f4ea8b"
+  },
   "experience/synopsys_logo.jpg": {
     "output_bytes": 19436,
     "source_bytes": 23831,
     "source_sha256": "8a1fe6c499d12b9e63dd8a2425241d1dae0ec4b7348ae12c366ce4f15c5e6b2c"
+  },
+  "experience/ticd_logo.png": {
+    "output_bytes": 29215,
+    "source_bytes": 48424,
+    "source_sha256": "e9c7490933a68178e7a04934cc2848ad5625e0528502eb1af8542b1e3b224730"
   },
   "experience/video_icon.png": {
     "output_bytes": 4525,
@@ -284,31 +344,6 @@
     "source_bytes": 3012259,
     "source_sha256": "dd4e70dea01c6735ff8508e4d4f5755547846677df1f1295cf4aca84bc567138"
   },
-  "games/anime-destruction-simulator.jpg": {
-    "output_bytes": 37459,
-    "source_bytes": 49967,
-    "source_sha256": "c6694807f37ab9230367a0051d5e4c6c9511b673ee19be9373cf2e51bb74d7fa"
-  },
-  "games/anime-warriors-simulator.jpg": {
-    "output_bytes": 39193,
-    "source_bytes": 51958,
-    "source_sha256": "fa4135942af2d2ca8d6b618b6e6ce7a2c2d1a2d98cb1fdc7b8b69ed9b112c423"
-  },
-  "games/idle-heroes-simulator.jpg": {
-    "output_bytes": 34656,
-    "source_bytes": 46574,
-    "source_sha256": "d1d878ec524108776f645cb1b66cb74ea5bab7e1bec685fa93c25d7504019ae3"
-  },
-  "games/make-a-military-army.jpg": {
-    "output_bytes": 44559,
-    "source_bytes": 73010,
-    "source_sha256": "cc73a034d70047ae0f06b8c494a266e73235ce35edb2dce04ee8540f543de74a"
-  },
-  "games/mowing-masters-simulator.jpg": {
-    "output_bytes": 38851,
-    "source_bytes": 51432,
-    "source_sha256": "64afa105bdbc62950559b2a3e2686d31ebf9d4282e45159bbe3f260023c209a7"
-  },
   "me.jpg": {
     "output_bytes": 95191,
     "source_bytes": 95191,
@@ -324,40 +359,15 @@
     "source_bytes": 53095,
     "source_sha256": "4b9cdc373604a27173b0c32b291b61c30bfeb9f38e156806b0fed831c16e3357"
   },
-  "projects/datamsith.png": {
-    "output_bytes": 559648,
-    "source_bytes": 654293,
-    "source_sha256": "f6495b5ec0a0fd95fc610989ee2c2d26b82554339fa47ad2dce91201d8c11cc6"
-  },
-  "projects/fluentform.png": {
-    "output_bytes": 541225,
-    "source_bytes": 693760,
-    "source_sha256": "4caad87b5102b2b68e4bc91155c06de783b467c07b9eead16eb3b2946045775a"
-  },
-  "projects/mcmc.png": {
-    "output_bytes": 69288,
-    "source_bytes": 80985,
-    "source_sha256": "52baf4450b83ff2a1dd135bd2083622972b39d7fec06f7264cc3ce51a348d928"
-  },
   "projects/mspice.png": {
     "output_bytes": 58780,
     "source_bytes": 58780,
     "source_sha256": "fe47af1311ee94b9d143d32621df58a987057a0120e7b2211d576af1f6f7b8d7"
   },
-  "projects/rojo.png": {
-    "output_bytes": 13407,
-    "source_bytes": 14083,
-    "source_sha256": "e998f581557a397118702992669e546c076602e9f4f0be3deb330f2bb06b5419"
-  },
   "projects/wei-studio.png": {
     "output_bytes": 94853,
     "source_bytes": 99549,
     "source_sha256": "79620a76aeeb9152b4db83fb93baca428fa2395db3a657988068b232f2fa2ad2"
-  },
-  "toolbox/rojo.png": {
-    "output_bytes": 975,
-    "source_bytes": 975,
-    "source_sha256": "b0a5e256575b34e45621ced023b4db50a1278333382e79558e40532a3af0322c"
   },
   "travel/SLC utah 1.jpg": {
     "output_bytes": 548662,

@@ -32,6 +32,28 @@ pnpm tailwindcss -i ./src/index.css -o ./dist/index.css --minify
 
 Then refresh the local preview in the browser.
 
+If `pnpm dev` is already running, it rebuilds on save: just refresh. Running the
+commands above alongside it races on the `dist/` clean step.
+
+## Images
+
+High-resolution originals live in OneDrive, not Git. `assets-original/` is a
+gitignored symlink to them; `public/assets/` holds the optimized copies that
+are committed.
+
+```bash
+pnpm images           # optimize new/changed originals into public/assets/
+pnpm images -- --force  # regenerate everything
+```
+
+To add an image: drop the original in `assets-original/<path>/`, run
+`pnpm images`, then reference `/assets/<path>/<same-filename>`. The output
+mirrors the source tree and keeps the filename, so check the real filenames
+and extensions in `assets-original/` before writing any `src`.
+
+To remove an image, delete the OneDrive original too. Deleting only the file
+in `public/assets/` means the next `pnpm images` regenerates it.
+
 ## Windows Note
 
 On this machine, prefer the explicit rebuild commands above instead of `pnpm build`.
