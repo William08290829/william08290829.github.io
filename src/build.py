@@ -224,30 +224,6 @@ custom_pages = [
             "description": f"{title_name}'s Curriculum Vitae (CV)",
             "image": site_url("/assets/me.jpg"),
         },
-    },
-    {
-        "template": "resources.html",
-        "output": ("resources.html",),
-        "title": f"{title_name} | Resources",
-        "seo": {
-            **seo_common,
-            "url": site_url("/resources"),
-            "title": f"{title_name} | Resources",
-            "description": f"{title_name}'s shelf of resources for visitors from videos and posts",
-            "image": site_url("/assets/me.jpg"),
-        },
-    },
-    {
-        "template": "tt.html",
-        "output": ("tt.html",),
-        "title": f"{title_name} | TikTok",
-        "seo": {
-            **seo_common,
-            "url": site_url("/tt"),
-            "title": f"{title_name} | TikTok",
-            "description": f"landing page for visitors coming from tiktok",
-            "image": site_url("/assets/me.jpg"),
-        },
     }
 ]
 

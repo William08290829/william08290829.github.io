@@ -1,4 +1,13 @@
 {% extends "layout.html" %}
+{% from "components/loader.html" import row as loader_row %}
+
+{% block loader_cmd %}cat ~/random/cv.md{% endblock %}
+
+{% block loader_lines %}
+  {{ loader_row("GET assets/cv/My CV.pdf", "ok") }}
+  {{ loader_row("rendering pdf viewer", "ok") }}
+{% endblock %}
+
 {% from "components/fieldset.html" import fieldset %}
 {% from "components/button.html" import button %}
 

@@ -35,6 +35,23 @@ Then refresh the local preview in the browser.
 If `pnpm dev` is already running, it rebuilds on save: just refresh. Running the
 commands above alongside it races on the `dist/` clean step.
 
+## Paths
+
+The site deploys to a GitHub Pages project subpath, not a domain root, so no
+in-page reference may start with `/`. `build.py` derives a `root` prefix from
+each page's output depth and passes it to the template: `./` at the top level,
+`../` under `random/`.
+
+```jinja
+<img src="{{ root }}assets/me.jpg" />          {# attributes and JS strings #}
+{% call button(root ~ "random/lore", "...") %} {# inside Jinja expressions #}
+url('{{ root }}assets/github.svg')             {# css url\(\) #}
+```
+
+Absolute urls are still correct for the og/twitter tags, which use
+`site_url()`. Do not use `urljoin` there: a path starting with `/` replaces the
+whole path and silently drops `base_path`.
+
 ## Images
 
 High-resolution originals live in OneDrive, not Git. `assets-original/` is a

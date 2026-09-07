@@ -1,4 +1,5 @@
 {% from "components/button.html" import button %}
+{% from "components/loader.html" import row as loader_row %}
 {%
   from
   "components/fieldset.html" import fieldset
@@ -219,8 +220,9 @@
       font-size: 0.82rem;
       line-height: 1.7;
       color: var(--site-muted);
+      /* fixed measure keeps the status column steady across pages */
+      width: 30rem;
       max-width: 100%;
-      overflow-x: auto;
     }
 
     .loader-console p {
@@ -229,17 +231,36 @@
       animation: loader-line-in 160ms ease forwards;
     }
 
-    .loader-console p:nth-child(2) {
-      animation-delay: 70ms;
+    .loader-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.45rem;
     }
 
-    .loader-console p:nth-child(3) {
-      animation-delay: 140ms;
+    .loader-label {
+      flex: 0 0 auto;
+      white-space: nowrap;
     }
 
-    .loader-console p:nth-child(4) {
-      animation-delay: 210ms;
+    /* a long run of periods, clipped to whatever gap is left */
+    .loader-fill {
+      flex: 1 1 auto;
+      overflow: hidden;
+      font-style: normal;
+      opacity: 0.5;
     }
+
+    /* stagger for up to 10 lines; HOLD in the script is 900ms and the last
+       line here lands at 9*70+160 = 790ms, so the pause survives a full page */
+    .loader-console p:nth-child(2) { animation-delay: 70ms; }
+    .loader-console p:nth-child(3) { animation-delay: 140ms; }
+    .loader-console p:nth-child(4) { animation-delay: 210ms; }
+    .loader-console p:nth-child(5) { animation-delay: 280ms; }
+    .loader-console p:nth-child(6) { animation-delay: 350ms; }
+    .loader-console p:nth-child(7) { animation-delay: 420ms; }
+    .loader-console p:nth-child(8) { animation-delay: 490ms; }
+    .loader-console p:nth-child(9) { animation-delay: 560ms; }
+    .loader-console p:nth-child(10) { animation-delay: 630ms; }
 
     @keyframes loader-line-in {
       from {
@@ -306,9 +327,11 @@
 <body>
   <div id="site-loader" aria-hidden="true">
     <div class="loader-console">
-      <p class="loader-prompt">wei@williamchen.me:~$ ./serve</p>
-      <p>loading fonts ............ <span class="loader-ok">ok</span></p>
-      <p>mounting assets .......... <span class="loader-ok">ok</span></p>
+      <p class="loader-prompt">wei@williamchen.me:~$ {% block loader_cmd %}./serve{% endblock %}</p>
+      {%- block loader_lines %}
+      {{ loader_row("loading fonts") }}
+      {{ loader_row("mounting assets") }}
+      {%- endblock %}
       <p>ready<span class="loader-caret">_</span></p>
     </div>
   </div>

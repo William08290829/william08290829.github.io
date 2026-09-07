@@ -1,5 +1,13 @@
 {% extends "layout.html" %}
+{% from "components/loader.html" import row as loader_row %}
 {% from "components/fieldset.html" import fieldset %}
+
+{% block loader_cmd %}cat ~/random/lore.md{% endblock %}
+
+{% block loader_lines %}
+  {{ loader_row("parsing faq entries", "ok") }}
+  {{ loader_row("loading router puzzles", "ok") }}
+{% endblock %}
 
 {% block head_extra %}
   <style>

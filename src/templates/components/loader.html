@@ -1,0 +1,6 @@
+{# One line of the boot log. The filler is a run of periods clipped by
+   overflow, so the status column lines up on its own: no hand-counted
+   padding to redo whenever a label changes. #}
+{% macro row(label, status="ok") -%}
+<p class="loader-row"><span class="loader-label">{{ label }}</span><i class="loader-fill" aria-hidden="true">................................................................</i><span class="loader-ok">{{ status }}</span></p>
+{%- endmacro %}
