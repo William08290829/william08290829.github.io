@@ -4,7 +4,8 @@
 {% block loader_cmd %}cat ~/random/cv.md{% endblock %}
 
 {% block loader_lines %}
-  {{ loader_row("GET assets/cv/My CV.pdf", "ok") }}
+  {{ loader_row("invoking xelatex engine", "ok") }}
+  {{ loader_row("GET assets/cv/my_cv.tex", "ok") }}
   {{ loader_row("rendering pdf viewer", "ok") }}
 {% endblock %}
 

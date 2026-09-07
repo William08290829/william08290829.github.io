@@ -5,7 +5,8 @@
 {% block loader_cmd %}cat ~/random/favorite.md{% endblock %}
 
 {% block loader_lines %}
-  {{ loader_row("unzip assets/fav.zip", "ok") }}
+  {{ loader_row("unzipping assets/fav.zip", "ok") }}
+  {{ loader_row("initializing velocity vectors", "ok") }}
   {{ loader_row("starting bounce physics", "ok") }}
 {% endblock %}
 

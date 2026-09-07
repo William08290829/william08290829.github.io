@@ -37,7 +37,7 @@
       // holds for a moment, then the overlay itself fades and reveals the page.
       // the boot log finishes drawing at ~370ms (last line 210ms delay + 160ms
       // fade), so HOLD keeps it readable and lets the caret blink once.
-      const HOLD = reduced ? 0 : 1250;       // boot log stays put
+      const HOLD = reduced ? 0 : 1500;       // boot log stays put
       const TEXT_FADE = reduced ? 0 : 240;  // must match .loader-console transition
       const BLANK = reduced ? 0 : 200;      // beat of empty background
 
@@ -204,6 +204,19 @@
     html.is-loading,
     html.is-clearing {
       overflow: hidden;
+    }
+
+    /* Nothing behind the overlay should be moving: a css animation would
+       otherwise burn through its timeline while the loader is still up, so the
+       reveal would catch it mid-cycle. Scoped to main, which leaves the
+       loader's own line-fade and caret running. Motion driven by rAF cannot be
+       paused from css and uses afterSiteReveal() instead.
+
+       Note the polarity: this pauses only while a loader class is present, so
+       a visitor with no JS (no classes at all) still gets animation. */
+    html.is-loading main *,
+    html.is-clearing main * {
+      animation-play-state: paused;
     }
 
     /* is-loaded must keep the console hidden too: reveal() drops is-clearing,
