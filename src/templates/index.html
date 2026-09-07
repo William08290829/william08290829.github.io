@@ -2,6 +2,17 @@
 {% from "components/fieldset.html" import fieldset %}
 {% from "components/button.html" import button %}
 
+{% block loader_cmd %}./serve{% endblock %}
+
+{% block loader_lines %}
+  {{ loader_row("loading fonts") }}
+  {{ loader_row("mounting assets") }}
+  {{ loader_row("mounting /dev/education", "ok") }}
+  {{ loader_row("loading libexperience.so", "ok") }}
+  {{ loader_row("unpacking assert/projects.tar.gz", "ok") }}
+  {{ loader_row("init session", "done") }}
+{% endblock %}
+
 {% block head_extra %}
 <style>
   .experience-card {
