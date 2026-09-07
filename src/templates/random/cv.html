@@ -13,7 +13,7 @@
               a quick breakdown of my academic background, technical stack, and research in eda.
             </p>
           </div>
-          {% call button("/assets/cv/My CV.pdf", "h-8 text-sm shrink-0", 'target="_blank" rel="noopener noreferrer"') %}
+          {% call button(root ~ "assets/cv/My CV.pdf", "h-8 text-sm shrink-0", 'target="_blank" rel="noopener noreferrer"') %}
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 mr-2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
             </svg>
@@ -23,7 +23,7 @@
 
         <div class="w-full border border-black/30 dark:border-white/25 overflow-hidden bg-white shadow-[4px_4px_0px_rgba(0,0,0,0.15)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.1)]">
           <iframe
-            src="/assets/cv/My CV.pdf"
+            src="{{ root }}assets/cv/My CV.pdf"
             class="w-full h-[85vh] min-h-[600px] border-none"
             title="My Curriculum Vitae"
           ></iframe>

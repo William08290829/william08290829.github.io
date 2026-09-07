@@ -1,7 +1,6 @@
 import os
 import argparse
 from shutil import rmtree
-from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup, element
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -14,7 +13,10 @@ title_name = name
 domain = "william08290829.github.io"
 generic_username = "William08290829"
 twitter_username = ""
-url = f"https://{domain}"  # for opengraph
+# GitHub Pages serves a project repo under /<repo-name>/. Only the absolute
+# urls in the og/twitter tags need it: everything on-page is relative.
+base_path = "/williamchen.me"
+url = f"https://{domain}{base_path}"  # for opengraph
 
 
 def bs(content):
@@ -56,6 +58,26 @@ def write_output(content, *path):
 
     with open(os.path.join(args.output, *path), "w", encoding="utf-8") as f:
         f.write(content)
+
+
+def site_url(path):
+    """Absolute url for the og/twitter tags.
+
+    A path starting with / would replace the whole path component when joined
+    against the base, silently dropping base_path, so join by hand.
+    """
+    return f"{url}/{path.lstrip('/')}"
+
+
+def relative_root(output):
+    """Prefix that walks from a page back to the site root.
+
+    Pages live at different depths (index.html vs random/lore.html), so the
+    same asset needs a different number of ../ steps depending on the page.
+    Keeping it relative means the local dev server and the Pages subpath both
+    work with no build-time configuration.
+    """
+    return "../" * (len(output) - 1) or "./"
 
 
 def render_template(template_name, **context):
@@ -118,7 +140,7 @@ seo_common = {
     "url": url,
     "title": title_name,
     "description": f"{title_name}'s personal website",
-    "image": urljoin(url, "/assets/me.jpg"),
+    "image": site_url("/assets/me.jpg"),
 }
 
 og = og_tags(
@@ -134,7 +156,9 @@ og = og_tags(
 twitter = twitter_tags({**seo_common, "card": "summary"})
 seotags = og + twitter
 
-index_soup = render_template("index.html", name=name, title=title_name)
+index_soup = render_template(
+    "index.html", name=name, title=title_name, root=relative_root(("index.html",))
+)
 for item in seotags:
     index_soup.head.append(bs(item))
 
@@ -147,10 +171,10 @@ custom_pages = [
         "title": f"{title_name} | Travel",
         "seo": {
             **seo_common,
-            "url": urljoin(url, "/random/travel"),
+            "url": site_url("/random/travel"),
             "title": f"{title_name} | Travel",
             "description": f"{title_name}'s travel map and bucket list",
-            "image": urljoin(url, "/assets/me.jpg"),
+            "image": site_url("/assets/me.jpg"),
         },
     },
     {
@@ -159,10 +183,10 @@ custom_pages = [
         "title": f"{title_name} | Favorite",
         "seo": {
             **seo_common,
-            "url": urljoin(url, "/random/favorite"),
+            "url": site_url("/random/favorite"),
             "title": f"{title_name} | Favorite",
             "description": f"{title_name}'s bouncing favorite wall",
-            "image": urljoin(url, "/assets/me.jpg"),
+            "image": site_url("/assets/me.jpg"),
         },
     },
     {
@@ -171,10 +195,10 @@ custom_pages = [
         "title": f"{title_name} | Wins",
         "seo": {
             **seo_common,
-            "url": urljoin(url, "/random/wins"),
+            "url": site_url("/random/wins"),
             "title": f"{title_name} | Wins",
             "description": f"{title_name}'s trophy case of wins and milestones",
-            "image": urljoin(url, "/assets/me.jpg"),
+            "image": site_url("/assets/me.jpg"),
         },
     },
     {
@@ -183,10 +207,10 @@ custom_pages = [
         "title": f"{title_name} | Lore",
         "seo": {
             **seo_common,
-            "url": urljoin(url, "/random/lore"),
+            "url": site_url("/random/lore"),
             "title": f"{title_name} | Lore",
             "description": f"The questions {title_name} gets asked, and the answers actually given",
-            "image": urljoin(url, "/assets/me.jpg"),
+            "image": site_url("/assets/me.jpg"),
         },
     },
     {
@@ -195,10 +219,10 @@ custom_pages = [
         "title": f"{title_name} | CV",
         "seo": {
             **seo_common,
-            "url": urljoin(url, "/random/cv"),
+            "url": site_url("/random/cv"),
             "title": f"{title_name} | CV",
             "description": f"{title_name}'s Curriculum Vitae (CV)",
-            "image": urljoin(url, "/assets/me.jpg"),
+            "image": site_url("/assets/me.jpg"),
         },
     },
     {
@@ -207,10 +231,10 @@ custom_pages = [
         "title": f"{title_name} | Resources",
         "seo": {
             **seo_common,
-            "url": urljoin(url, "/resources"),
+            "url": site_url("/resources"),
             "title": f"{title_name} | Resources",
             "description": f"{title_name}'s shelf of resources for visitors from videos and posts",
-            "image": urljoin(url, "/assets/me.jpg"),
+            "image": site_url("/assets/me.jpg"),
         },
     },
     {
@@ -219,16 +243,21 @@ custom_pages = [
         "title": f"{title_name} | TikTok",
         "seo": {
             **seo_common,
-            "url": urljoin(url, "/tt"),
+            "url": site_url("/tt"),
             "title": f"{title_name} | TikTok",
             "description": f"landing page for visitors coming from tiktok",
-            "image": urljoin(url, "/assets/me.jpg"),
+            "image": site_url("/assets/me.jpg"),
         },
     }
 ]
 
 for page in custom_pages:
-    soup = render_template(page["template"], name=name, title=page["title"])
+    soup = render_template(
+        page["template"],
+        name=name,
+        title=page["title"],
+        root=relative_root(page["output"]),
+    )
     page_tags = og_tags({**page["seo"], "type": "website"}) + twitter_tags(page["seo"])
 
     for item in page_tags:

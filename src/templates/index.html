@@ -348,8 +348,8 @@
   <article class="font-serif !text-xl prose-p:m-0 flex flex-col-reverse sm:block">
     <div
       class="profile-photo-wrap mt-4 mx-auto w-56 max-w-full sm:float-right sm:mt-0 sm:ml-4 sm:mb-4 sm:mx-0 sm:w-52 md:w-60 lg:w-64">
-      <img src="/assets/me.jpg" alt="Portrait of William Chen" class="photo-main w-full object-cover" loading="eager" />
-      <img src="/assets/me_alt.jpg" alt="Goofy portrait of William Chen" class="photo-alt w-full object-cover"
+      <img src="{{ root }}assets/me.jpg" alt="Portrait of William Chen" class="photo-main w-full object-cover" loading="eager" />
+      <img src="{{ root }}assets/me_alt.jpg" alt="Goofy portrait of William Chen" class="photo-alt w-full object-cover"
         loading="eager" />
       <span class="easter-egg-note">you found my easter egg!</span>
     </div>
@@ -376,19 +376,19 @@
       <p class="font-serif text-xl m-0">A collection of things that make me, me. Featuring the formal CV, travel snaps, current hyperfixations, a wall of wins, and some personal lore</p>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 pt-1">
-      {% call button("/random/cv", "w-full h-9 text-base font-bold me-0 !justify-start") %}
+      {% call button(root ~ "random/cv", "w-full h-9 text-base font-bold me-0 !justify-start") %}
       <span>CV</span>
       {% endcall %}
-      {% call button("/random/travel", "w-full h-9 text-base font-bold me-0 !justify-start") %}
+      {% call button(root ~ "random/travel", "w-full h-9 text-base font-bold me-0 !justify-start") %}
       <span>Travel</span>
       {% endcall %}
-      {% call button("/random/favorite", "w-full h-9 text-base font-bold me-0 !justify-start") %}
+      {% call button(root ~ "random/favorite", "w-full h-9 text-base font-bold me-0 !justify-start") %}
       <span>Favorite</span>
       {% endcall %}
-      {% call button("/random/wins", "w-full h-9 text-base font-bold me-0 !justify-start") %}
+      {% call button(root ~ "random/wins", "w-full h-9 text-base font-bold me-0 !justify-start") %}
       <span>Wins</span>
       {% endcall %}
-      {% call button("/random/lore", "w-full h-9 text-base font-bold me-0 !justify-start") %}
+      {% call button(root ~ "random/lore", "w-full h-9 text-base font-bold me-0 !justify-start") %}
       <span>Lore</span>
       {% endcall %}
     </div>
@@ -400,7 +400,7 @@
     <div class="flex flex-col gap-4 mt-4">
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <div class="flex items-start gap-3">
-          <img src="/assets/edu/NTHU.png" alt="NTHU logo"
+          <img src="{{ root }}assets/edu/NTHU.png" alt="NTHU logo"
             class="w-12 h-12 shrink-0 object-contain my-1 border border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
@@ -417,7 +417,7 @@
       </div>
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <div class="flex items-start gap-3">
-          <img src="/assets/edu/NCU.png" alt="NCU logo"
+          <img src="{{ root }}assets/edu/NCU.png" alt="NCU logo"
             class="w-12 h-12 shrink-0 object-contain my-1 border border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
@@ -434,7 +434,7 @@
       </div>
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <div class="flex items-start gap-3">
-          <img src="/assets/edu/DSHS.jpg" alt="DSHS logo"
+          <img src="{{ root }}assets/edu/DSHS.jpg" alt="DSHS logo"
             class="w-12 h-12 shrink-0 object-contain my-1 border border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
@@ -459,7 +459,7 @@
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <span class="favorite-star" aria-hidden="true"></span>
         <div class="flex items-start gap-3">
-          <img src="/assets/experience/synopsys_logo.jpg" alt="synopsys logo"
+          <img src="{{ root }}assets/experience/synopsys_logo.jpg" alt="synopsys logo"
             class="w-12 h-12 shrink-0 object-contain my-1 border-2 border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
@@ -485,7 +485,7 @@
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <span class="favorite-star" aria-hidden="true"></span>
         <div class="flex items-start gap-3">
-          <img src="/assets/experience/ticd_logo.png" alt="VLSI Design/CAD Symposium logo"
+          <img src="{{ root }}assets/experience/ticd_logo.png" alt="VLSI Design/CAD Symposium logo"
             class="w-12 h-12 shrink-0 object-contain my-1 border-2 border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
@@ -511,7 +511,7 @@
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <span class="favorite-star" aria-hidden="true"></span>
         <div class="flex items-start gap-3">
-          <img src="/assets/experience/ICCAD.png" alt="ICCAD logo"
+          <img src="{{ root }}assets/experience/ICCAD.png" alt="ICCAD logo"
             class="w-12 h-12 shrink-0 object-contain my-1 border-2 border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
@@ -537,7 +537,7 @@
 
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <div class="flex items-start gap-3">
-          <img src="/assets/experience/NTSEC.png" alt="NTSEC logo"
+          <img src="{{ root }}assets/experience/NTSEC.png" alt="NTSEC logo"
             class="w-12 h-12 shrink-0 object-contain my-1 border-2 border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
@@ -563,7 +563,7 @@
 
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <div class="flex items-start gap-3">
-          <img src="/assets/experience/Taipei City Government logo.png" alt="Taipei City Government logo"
+          <img src="{{ root }}assets/experience/Taipei City Government logo.png" alt="Taipei City Government logo"
             class="w-12 h-12 shrink-0 object-contain my-1 border-2 border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
@@ -584,7 +584,7 @@
       
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <div class="flex items-start gap-3">
-          <img src="/assets/experience/c4m.jpg" alt="C4M logo"
+          <img src="{{ root }}assets/experience/c4m.jpg" alt="C4M logo"
             class="w-12 h-12 shrink-0 object-contain my-1 border-2 border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
@@ -610,7 +610,7 @@
 
       <div class="experience-card border border-black/30 dark:border-white/25 p-3">
         <div class="flex items-start gap-3">
-          <img src="/assets/experience/video_icon.png" alt="video icon"
+          <img src="{{ root }}assets/experience/video_icon.png" alt="video icon"
             class="w-12 h-12 shrink-0 object-contain my-1 border-2 border-black/30 dark:border-white/25 p-1 bg-white"
             loading="lazy" />
           <div class="min-w-0 flex-1">
@@ -642,7 +642,7 @@
     <div class="flex flex-col gap-4 mt-4">
       <article class="project-card border border-black/30 dark:border-white/25 p-3">
         <div class="project-row">
-          <img src="/assets/projects/mspice.png" alt="Mspice circuit simulator website" class="project-thumb"
+          <img src="{{ root }}assets/projects/mspice.png" alt="Mspice circuit simulator website" class="project-thumb"
             loading="lazy" />
           <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
             <div>
@@ -666,7 +666,7 @@
 
       <article class="project-card border border-black/30 dark:border-white/25 p-3">
         <div class="project-row">
-          <img src="/assets/projects/wei-studio.png" alt="WEI Studio website" class="project-thumb"
+          <img src="{{ root }}assets/projects/wei-studio.png" alt="WEI Studio website" class="project-thumb"
             loading="lazy" />
           <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
             <div>
@@ -690,7 +690,7 @@
 
       <article class="project-card border border-black/30 dark:border-white/25 p-3">
         <div class="project-row">
-          <img src="/assets/projects/OutFit.png" alt="OutFit weather and clothing suggestion website" class="project-thumb"
+          <img src="{{ root }}assets/projects/OutFit.png" alt="OutFit weather and clothing suggestion website" class="project-thumb"
             loading="lazy" />
           <div class="project-copy flex flex-col gap-2 min-w-0 justify-start">
             <div>
@@ -744,15 +744,15 @@
     </div>
     <div class="experience-gallery-grid">
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_vlsicad/vlsicad_poster.jpg" alt="Standing with our poster" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_vlsicad/vlsicad_poster.jpg" alt="Standing with our poster" loading="lazy" />
         <p>Standing with our poster at the symposium.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_vlsicad/dinner.jpg" alt="Dinner in Tainan" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_vlsicad/dinner.jpg" alt="Dinner in Tainan" loading="lazy" />
         <p>Really enjoyed the dinner!</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_vlsicad/breakfast.jpg" alt="Breakfast in Tainan" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_vlsicad/breakfast.jpg" alt="Breakfast in Tainan" loading="lazy" />
         <p>...and loved the breakfast too!</p>
       </figure>
     </div>
@@ -773,35 +773,35 @@
     </div>
     <div class="experience-gallery-grid">
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_snps/Day1.jpeg" alt="First day of the internship" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_snps/Day1.jpeg" alt="First day of the internship" loading="lazy" />
         <p>Day one at the Hsinchu new office!</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_snps/Day3.jpeg" alt="Third day of the internship" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_snps/Day3.jpeg" alt="Third day of the internship" loading="lazy" />
         <p>Day three, a big group photo with all interns!</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_snps/PurplePoster.jpg" alt="Standing with my purple poster" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_snps/PurplePoster.jpg" alt="Standing with my purple poster" loading="lazy" />
         <p>Synopsys has every intern turn their final result into a purple poster. This one is mine.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_snps/Pitch-Fest-Group-Photo.jpeg" alt="Group photo at Pitch Fest" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_snps/Pitch-Fest-Group-Photo.jpeg" alt="Group photo at Pitch Fest" loading="lazy" />
         <p>Pitch Fest group photo, taken right after everyone presented.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_snps/Best-Pitch-Award.jpeg" alt="Best Pitch award" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_snps/Best-Pitch-Award.jpeg" alt="Best Pitch award" loading="lazy" />
         <p>Somehow walked away with Best Pitch.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_snps/Final-Photo_with_mentor.jpg" alt="Final photo with my mentor" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_snps/Final-Photo_with_mentor.jpg" alt="Final photo with my mentor" loading="lazy" />
         <p>Final photo with my mentor & my teammate.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_snps/Last-lunch_with_team.jpeg" alt="Last lunch with the team" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_snps/Last-lunch_with_team.jpeg" alt="Last lunch with the team" loading="lazy" />
         <p>Last lunch with the team before the internship wrapped up.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_snps/certificate.jpg" alt="Internship completion certificate" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_snps/certificate.jpg" alt="Internship completion certificate" loading="lazy" />
         <p>Internship completion certificate.</p>
       </figure>
     </div>
@@ -822,11 +822,11 @@
     </div>
     <div class="experience-gallery-grid">
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_iccad/award photo.jpg" alt="Award ceremony photo" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_iccad/award photo.jpg" alt="Award ceremony photo" loading="lazy" />
         <p>Receiving the honorable mention award at the workshop.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_iccad/CAD Contest award.jpg" alt="CAD Contest award certificate" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_iccad/CAD Contest award.jpg" alt="CAD Contest award certificate" loading="lazy" />
         <p>CAD Contest honorable mention certificate.</p>
       </figure>
     </div>
@@ -847,23 +847,23 @@
     </div>
     <div class="experience-gallery-grid">
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_c4m/機器人倒立.jpg" alt="Handstand" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_c4m/機器人倒立.jpg" alt="Handstand" loading="lazy" />
         <p>Our robot is doing a handstand.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_c4m/機器人營1.jpg" alt="Drama" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_c4m/機器人營1.jpg" alt="Drama" loading="lazy" />
         <p>Me and my classmate carrying the entire dramatic weight of the camp.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_c4m/機器人營3.jpg" alt="Team photo!!" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_c4m/機器人營3.jpg" alt="Team photo!!" loading="lazy" />
         <p>Team photo!!</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_c4m/機器人營4.jpg" alt="Deep in concentration" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_c4m/機器人營4.jpg" alt="Deep in concentration" loading="lazy" />
         <p>Deep in concentration (or just trying to look professional for the camera).</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_c4m/機器人營2.jpg" alt="The whole crew" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_c4m/機器人營2.jpg" alt="The whole crew" loading="lazy" />
         <p>The whole C4M camp crew!!</p>
       </figure>
     </div>
@@ -885,35 +885,35 @@
     </div>
     <div class="experience-gallery-grid">
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_ev3/group_photo1.jpg" alt="Group photo!!" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_ev3/group_photo1.jpg" alt="Group photo!!" loading="lazy" />
         <p>Group photo!!</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_ev3/lego_mindstorm.jpg" alt="LEGO Mindstorms" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_ev3/lego_mindstorm.jpg" alt="LEGO Mindstorms" loading="lazy" />
         <p>LEGO Mindstorms.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_ev3/crane.jpg" alt="Crane" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_ev3/crane.jpg" alt="Crane" loading="lazy" />
         <p>A surprisingly capable motorized crane.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_ev3/teaching1.jpg" alt="Teaching" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_ev3/teaching1.jpg" alt="Teaching" loading="lazy" />
         <p>Teaching.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_ev3/teaching2.jpg" alt="Teaching" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_ev3/teaching2.jpg" alt="Teaching" loading="lazy" />
         <p>And teaching~</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_ev3/forklift.jpg" alt="Forklift" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_ev3/forklift.jpg" alt="Forklift" loading="lazy" />
         <p>Getting the kids forklift certified, one brick at a time.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_ev3/rover.jpg" alt="Rover" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_ev3/rover.jpg" alt="Rover" loading="lazy" />
         <p>Obstacle-avoiding rover, but made of EV3 bricks.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_ev3/group_photo2.jpg" alt="Group photo!!" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_ev3/group_photo2.jpg" alt="Group photo!!" loading="lazy" />
         <p>Another group photo!!</p>
       </figure>
     </div>
@@ -934,19 +934,19 @@
     </div>
     <div class="experience-gallery-grid">
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_ad/拍攝過程1.jpg" alt="Filming" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_ad/拍攝過程1.jpg" alt="Filming" loading="lazy" />
         <p>Trying to create cinematic magic on a high school student budget.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_ad/stills1.jpg" alt="Filming" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_ad/stills1.jpg" alt="Filming" loading="lazy" />
         <p>Some stills from the final cut.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_ad/stills2.jpg" alt="Filming" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_ad/stills2.jpg" alt="Filming" loading="lazy" />
         <p>Actually looks like a real Hollywood movie if you squint hard enough.</p>
       </figure>
       <figure class="experience-gallery-item">
-        <img src="/assets/experience/pics_ad/廣告吃飯.jpg" alt="Dinner" loading="lazy" />
+        <img src="{{ root }}assets/experience/pics_ad/廣告吃飯.jpg" alt="Dinner" loading="lazy" />
         <p>Filming is a wrap. Time to eat before the editing nightmare actually begins.</p>
       </figure>
     </div>
