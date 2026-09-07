@@ -14,10 +14,65 @@
   <title>{{ title }}</title>
   <script>
     (() => {
-      const storedTheme = localStorage.getItem("theme");
-      if (storedTheme === "dark") {
-        document.documentElement.classList.add("dark");
+      const root = document.documentElement;
+
+      // storage can throw when the browser blocks site data; the loader below
+      // must not inherit that failure
+      try {
+        if (localStorage.getItem("theme") === "dark") {
+          root.classList.add("dark");
+        }
+      } catch (err) {
+        /* keep the default light theme */
       }
+
+      // the overlay is display:none until this class lands, so a visitor with
+      // no JS never sees a loader that nothing can dismiss
+      root.classList.add("is-loading");
+
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // the exit runs in two beats: the console leaves, the empty background
+      // holds for a moment, then the overlay itself fades and reveals the page.
+      // the boot log finishes drawing at ~370ms (last line 210ms delay + 160ms
+      // fade), so HOLD keeps it readable and lets the caret blink once.
+      const HOLD = reduced ? 0 : 900;       // boot log stays put
+      const TEXT_FADE = reduced ? 0 : 240;  // must match .loader-console transition
+      const BLANK = reduced ? 0 : 200;      // beat of empty background
+
+      const start = Date.now();
+      let exiting = false;
+      let settled = false;
+
+      // final state: overlay transparent, page visible
+      function reveal() {
+        if (settled) return;
+        settled = true;
+        root.classList.remove("is-loading", "is-clearing");
+        root.classList.add("is-loaded");
+      }
+
+      // first beat: drop the text but keep the background covering the page
+      function beginExit() {
+        if (settled || exiting) return;
+        exiting = true;
+        root.classList.add("is-clearing");
+        window.setTimeout(reveal, TEXT_FADE + BLANK);
+      }
+
+      // webfonts are the slow part of this site, not the html
+      function afterFonts() {
+        window.setTimeout(beginExit, Math.max(0, HOLD - (Date.now() - start)));
+      }
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(afterFonts, afterFonts);
+      } else {
+        afterFonts();
+      }
+
+      // never trap the visitor: still exits gracefully, just later
+      window.setTimeout(beginExit, 2600);
     })();
   </script>
 
@@ -118,6 +173,124 @@
       mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='black'%3E%3Ccircle cx='12' cy='12' r='4.2'/%3E%3Crect x='11.3' y='1.8' width='1.4' height='4.1' rx='0.7'/%3E%3Crect x='11.3' y='18.1' width='1.4' height='4.1' rx='0.7'/%3E%3Crect x='18.1' y='11.3' width='4.1' height='1.4' rx='0.7'/%3E%3Crect x='1.8' y='11.3' width='4.1' height='1.4' rx='0.7'/%3E%3Crect x='16.85' y='4.25' width='1.4' height='4' rx='0.7' transform='rotate(45 17.55 6.25)'/%3E%3Crect x='5.75' y='15.35' width='1.4' height='4' rx='0.7' transform='rotate(45 6.45 17.35)'/%3E%3Crect x='15.35' y='16.85' width='4' height='1.4' rx='0.7' transform='rotate(45 17.35 17.55)'/%3E%3Crect x='4.25' y='5.75' width='4' height='1.4' rx='0.7' transform='rotate(45 6.25 6.45)'/%3E%3C/g%3E%3C/svg%3E");
       -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='black'%3E%3Ccircle cx='12' cy='12' r='4.2'/%3E%3Crect x='11.3' y='1.8' width='1.4' height='4.1' rx='0.7'/%3E%3Crect x='11.3' y='18.1' width='1.4' height='4.1' rx='0.7'/%3E%3Crect x='18.1' y='11.3' width='4.1' height='1.4' rx='0.7'/%3E%3Crect x='1.8' y='11.3' width='4.1' height='1.4' rx='0.7'/%3E%3Crect x='16.85' y='4.25' width='1.4' height='4' rx='0.7' transform='rotate(45 17.55 6.25)'/%3E%3Crect x='5.75' y='15.35' width='1.4' height='4' rx='0.7' transform='rotate(45 6.45 17.35)'/%3E%3Crect x='15.35' y='16.85' width='4' height='1.4' rx='0.7' transform='rotate(45 17.35 17.55)'/%3E%3Crect x='4.25' y='5.75' width='4' height='1.4' rx='0.7' transform='rotate(45 6.25 6.45)'/%3E%3C/g%3E%3C/svg%3E");
     }
+
+    /* boot-sequence overlay. hidden by default so it can never strand a
+       visitor without JS; the head script opts it in, then takes it away. */
+    #site-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: var(--site-bg);
+      transition: opacity 320ms ease;
+    }
+
+    html.is-loading,
+    html.is-clearing {
+      overflow: hidden;
+    }
+
+    /* is-loaded must keep the console hidden too: reveal() drops is-clearing,
+       and without this the text would transition back in behind the fade */
+    html.is-clearing .loader-console,
+    html.is-loaded .loader-console {
+      opacity: 0;
+    }
+
+    html.is-loading #site-loader,
+    html.is-clearing #site-loader,
+    html.is-loaded #site-loader {
+      display: flex;
+    }
+
+    html.is-loaded #site-loader {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loader-console {
+      /* opacity is driven by html.is-clearing; keep in step with TEXT_FADE */
+      transition: opacity 240ms ease;
+      /* system mono fallback matters here: the webfont is what we are waiting on */
+      font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: var(--site-muted);
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .loader-console p {
+      margin: 0;
+      opacity: 0;
+      animation: loader-line-in 160ms ease forwards;
+    }
+
+    .loader-console p:nth-child(2) {
+      animation-delay: 70ms;
+    }
+
+    .loader-console p:nth-child(3) {
+      animation-delay: 140ms;
+    }
+
+    .loader-console p:nth-child(4) {
+      animation-delay: 210ms;
+    }
+
+    @keyframes loader-line-in {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .loader-prompt {
+      color: var(--site-text);
+      font-weight: 600;
+    }
+
+    .loader-ok {
+      color: #1ca34b;
+      font-weight: 600;
+    }
+
+    .loader-caret {
+      animation: loader-caret 900ms step-end infinite;
+    }
+
+    @keyframes loader-caret {
+      0%, 49% {
+        opacity: 1;
+      }
+      50%, 100% {
+        opacity: 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #site-loader {
+        transition: none;
+      }
+
+      .loader-console {
+        transition: none;
+      }
+
+      .loader-console p {
+        animation: none;
+        opacity: 1;
+      }
+
+      .loader-caret {
+        animation: none;
+      }
+    }
   </style>
   {% block head_extra %}{% endblock %}
   <script>
@@ -131,6 +304,14 @@
   ></script>
 </head>
 <body>
+  <div id="site-loader" aria-hidden="true">
+    <div class="loader-console">
+      <p class="loader-prompt">wei@williamchen.me:~$ ./serve</p>
+      <p>loading fonts ............ <span class="loader-ok">ok</span></p>
+      <p>mounting assets .......... <span class="loader-ok">ok</span></p>
+      <p>ready<span class="loader-caret">_</span></p>
+    </div>
+  </div>
   <main
     class="flex min-h-screen flex-col max-w-5xl mx-auto px-4 py-4 sm:py-8 leading-5 font-sans"
   >
