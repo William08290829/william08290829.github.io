@@ -1027,7 +1027,11 @@
       makeShelf();
       updateHover(favorites[0]);
       createSprites();
-      animationFrame = requestAnimationFrame(step);
+      // hold the motion until the loader lifts, so the sprites are seen
+      // leaving their starting positions rather than already in flight
+      (window.afterSiteReveal || ((fn) => fn()))(() => {
+        animationFrame = requestAnimationFrame(step);
+      });
     })();
   </script>
 {% endblock %}

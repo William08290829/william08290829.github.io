@@ -37,13 +37,14 @@
       // holds for a moment, then the overlay itself fades and reveals the page.
       // the boot log finishes drawing at ~370ms (last line 210ms delay + 160ms
       // fade), so HOLD keeps it readable and lets the caret blink once.
-      const HOLD = reduced ? 0 : 900;       // boot log stays put
+      const HOLD = reduced ? 0 : 1250;       // boot log stays put
       const TEXT_FADE = reduced ? 0 : 240;  // must match .loader-console transition
       const BLANK = reduced ? 0 : 200;      // beat of empty background
 
       const start = Date.now();
       let exiting = false;
       let settled = false;
+      let revealed = false;
 
       // final state: overlay transparent, page visible
       function reveal() {
@@ -51,7 +52,18 @@
         settled = true;
         root.classList.remove("is-loading", "is-clearing");
         root.classList.add("is-loaded");
+        revealed = true;
+        document.dispatchEvent(new Event("site:revealed"));
       }
+
+      // A page with its own motion should start it from here, so the reveal
+      // shows the scene from its first frame rather than mid-flight. Runs
+      // immediately if the reveal already happened, which is what
+      // reduced-motion does.
+      window.afterSiteReveal = function (fn) {
+        if (revealed) fn();
+        else document.addEventListener("site:revealed", fn, { once: true });
+      };
 
       // first beat: drop the text but keep the background covering the page
       function beginExit() {
@@ -73,7 +85,7 @@
       }
 
       // never trap the visitor: still exits gracefully, just later
-      window.setTimeout(beginExit, 2600);
+      window.setTimeout(beginExit, 3000);
     })();
   </script>
 

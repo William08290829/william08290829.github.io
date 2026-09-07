@@ -6,6 +6,8 @@
 
 {% block loader_lines %}
   {{ loader_row("unzip assets/travel.zip", "ok") }}
+  {{ loader_row("loading assets/earth.svg", "ok") }}
+  {{ loader_row("setting global coordinate points", "ok") }}
   {{ loader_row("spinning up globe", "ok") }}
 {% endblock %}
 
@@ -1140,7 +1142,8 @@
           draw();
         });
 
-      animate();
+      // draw() has already painted a static globe; only the spin waits
+      (window.afterSiteReveal || ((fn) => fn()))(animate);
     })();
   </script>
 {% endblock %}
